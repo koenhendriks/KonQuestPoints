@@ -1,10 +1,7 @@
 package quests;
 
 import org.tbot.internal.handlers.LogHandler;
-import org.tbot.methods.GameObjects;
-import org.tbot.methods.GroundItems;
-import org.tbot.methods.Random;
-import org.tbot.methods.Time;
+import org.tbot.methods.*;
 import org.tbot.methods.walking.Path;
 import org.tbot.methods.walking.Walking;
 import org.tbot.util.Condition;
@@ -97,5 +94,16 @@ abstract class Quest {
         } else if (gi.isOnScreen()){
             setState(nextState);
         }
+    }
+
+    /**
+     * Get the floor that the player is currently on
+     *
+     * @return
+     */
+    static int getCurrentFloor(){
+        String location = Players.getLocal().getLocation().toString();
+        String floor = location.substring(location.length()-2,location.length()-1);
+        return Integer.valueOf(floor);
     }
 }
