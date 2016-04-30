@@ -11,6 +11,7 @@ import org.tbot.methods.walking.Walking;
 import org.tbot.util.Condition;
 import org.tbot.wrappers.Area;
 import org.tbot.wrappers.GameObject;
+import org.tbot.wrappers.GroundItem;
 import org.tbot.wrappers.Tile;
 
 
@@ -34,9 +35,10 @@ public final class CooksAssistant extends Quest {
     public static final int potOfFlourId = 1933;
     public static final int bucketId = 1925;
     public static final int bucketOfMilkId = 1927;
-    public static final int eggId = 1944;
-    public static final int wheatId = 1947;
+    public static final int grainId = 1947;
 
+    public static final String eggString = "Egg";
+    public static final String wheatString = "Wheat";
     public static final String dairyCowString = "Dairy cow";
 
 
@@ -56,13 +58,25 @@ public final class CooksAssistant extends Quest {
                     getItems();
                     break;
                 case "walkToCow":
-                    goToCow();
+                    walkToCow();
                     break;
                 case "milk":
                     milkCow();
                     break;
                 case "walkToWheat":
                     walkToWheat();
+                    break;
+                case "pickWheat":
+                    pickWheat();
+                    break;
+                case "walkToEgg":
+                    walkToEgg();
+                    break;
+                case "grabEgg":
+                    grabEgg();
+                    break;
+                case "walkToWindMill":
+                    break;
                 case "stop":
                     return -1;
             }
@@ -72,13 +86,44 @@ public final class CooksAssistant extends Quest {
         return 500;
     }
 
-    private static void walkToWheat(){
+    private static void pickWheat(){
+        if(Inventory.contains(grainId)){
+            setState("walkToWindMill");
+        } else {
+            GameObject wheat = GameObjects.getNearest(wheatString);
 
+            wheat.interact("Pick");
+
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return Inventory.contains(grainId);
+                }
+            }, Random.nextInt(1937,3265));
+        }
+    }
+
+    private static void grabEgg(){
+        if(Inventory.contains(eggString)){
+            setState("walkToWheat");
+        } else {
+            GroundItem egg = GroundItems.getNearest(eggString);
+
+            egg.pickUp();
+
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return Inventory.contains(eggString);
+                }
+            }, Random.nextInt(1322,3498));
+
+        }
     }
 
     private static void milkCow() {
         if(Inventory.contains(bucketOfMilkId)){
-            setState("walkToWheat");
+            setState("walkToEgg");
         } else {
             GameObject dairyCow = GameObjects.getNearest(dairyCowString);
 
@@ -90,26 +135,6 @@ public final class CooksAssistant extends Quest {
                     return Inventory.contains(bucketOfMilkId);
                 }
             }, Random.nextInt(4241,5333));
-        }
-
-
-    }
-
-    private static void goToCow() {
-
-        GameObject dairyCow = GameObjects.getNearest(dairyCowString);
-        Path pathToCow = Walking.findPath(dairyCowArea.getCentralTile());
-
-        if((dairyCow != null && !dairyCow.isOnScreen()) || dairyCow == null){
-            pathToCow.traverse();
-            Time.sleepUntil(new Condition() {
-                @Override
-                public boolean check() {
-                    return GameObjects.getNearest(dairyCowString) != null;
-                }
-            }, Random.nextInt(800,2109));
-        } else if (dairyCow.isOnScreen()){
-            setState("milk");
         }
     }
 
@@ -142,8 +167,29 @@ public final class CooksAssistant extends Quest {
         }
     }
 
+    private static void walkToWheat(){
+        if(!Inventory.contains(grainId))
+            goToGameObject(wheatString, wheatArea, "pickWheat");
+        else
+            setState("pickWheat");
+    }
+
+    private static void walkToEgg(){
+        if(!Inventory.contains(eggString))
+            goToGroundItem(eggString, eggArea, "grabEgg");
+        else
+            setState("grabEgg");
+    }
+
+    private static void walkToCow() {
+        if(!Inventory.contains(bucketOfMilkId))
+            goToGameObject(dairyCowString,dairyCowArea,"milk");
+        else
+            setState("walkToEgg");
+    }
+
     private static boolean haveStartItems() {
-        return Inventory.contains(potId) && Inventory.contains(bucketId);
+        return ((Inventory.contains(potId) && Inventory.contains(bucketId)) || (Inventory.contains(potId) && Inventory.contains(bucketOfMilkId)) || (Inventory.contains(potOfFlourId) && Inventory.contains(bucketId)) || (Inventory.contains(potOfFlourId) && Inventory.contains(bucketOfMilkId)));
     }
 
 
