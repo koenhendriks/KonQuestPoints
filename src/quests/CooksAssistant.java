@@ -27,8 +27,7 @@ public final class CooksAssistant extends Quest {
     public static final Area dairyCowArea = new Area(new Tile[]  {new Tile(3254,3281,0),new Tile(3256,3267,0),new Tile(3259,3269,0),new Tile(3257,3280,0)});
     public static final Area eggArea = new Area(new Tile[]  {new Tile(3233,3296,0),new Tile(3227,3295,0),new Tile(3228,3300,0),new Tile(3233,3300,0)});
     public static final Area wheatArea = new Area(new Tile[]  {new Tile(3155,3298,0),new Tile(3160,3297,0),new Tile(3158,3305,0),new Tile(3154,3304,0)});
-    public static final Area windmillTopArea = new Area(new Tile[]  {new Tile(3165,3305,2),new Tile(3168,3305,2),new Tile(3168,3308,2),new Tile(3165,3308,2)});
-    public static final Area windmillFloorArea = new Area(new Tile[]  {new Tile(3165,3305,0),new Tile(3165,3308,0),new Tile(3168,3308,0),new Tile(3168,3305,0)});
+    public static final Area windmillArea = new Area(new Tile[]  {new Tile(3166,3308,0)});
 
     public static final int cookId = 4626;
     public static final int potId = 1931;
@@ -40,6 +39,10 @@ public final class CooksAssistant extends Quest {
     public static final String eggString = "Egg";
     public static final String wheatString = "Wheat";
     public static final String dairyCowString = "Dairy cow";
+    public static final String hopperString = "Hopper";
+    public static final String hopperControlsString = "Hopper controls";
+    public static final String flourBinString = "Flour bin";
+    public static final String ladderString = "ladder";
 
 
 
@@ -76,6 +79,10 @@ public final class CooksAssistant extends Quest {
                     grabEgg();
                     break;
                 case "walkToWindMill":
+                    walkToWindMill();
+                    break;
+                case "climbWindMill":
+                    climbWindMill();
                     break;
                 case "stop":
                     return -1;
@@ -84,6 +91,29 @@ public final class CooksAssistant extends Quest {
 
 
         return 500;
+    }
+
+    private static void climbWindMill(){
+        if(Inventory.contains(potOfFlourId)){
+            setState("walkToCook");
+        } else {
+            if(getCurrentFloor() == 2) {
+                setState("makeFlour");
+            } else {
+                GameObject ladder = GameObjects.getNearest(ladderString);
+                if(ladder != null && !ladder.isOnScreen()){
+                    Camera.turnTo(ladder);
+                } else if(ladder != null && ladder.isOnScreen()){
+                    ladder.interact("Climb-up");
+                    Time.sleepUntil(new Condition() {
+                        @Override
+                        public boolean check() {
+                            return getCurrentFloor() == 2;
+                        }
+                    }, Random.nextInt(900,1500));
+                }
+            }
+        }
     }
 
     private static void pickWheat(){
@@ -165,6 +195,13 @@ public final class CooksAssistant extends Quest {
         } else {
             setState("walkToCow");
         }
+    }
+
+    private static void walkToWindMill(){
+        if(!Inventory.contains(potOfFlourId))
+            goToGameObject(flourBinString, windmillArea, "climbWindMill");
+        else
+            setState("climbWindMill");
     }
 
     private static void walkToWheat(){
