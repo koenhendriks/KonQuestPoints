@@ -22,10 +22,10 @@ import java.awt.geom.Area;
 @Manifest(name = "Kon Quest Points", authors = "Kom Op Nou", version = 1.0, description = "Gets you to 7 Quest points so you can trade and use the Grand Exchange", category = ScriptCategory.OTHER)
 public class MainHandler extends AbstractScript implements PaintListener, MessageListener, InventoryListener {
 
+
     @Override
     public int loop() {
-        CooksAssistant.run();
-        return 500;
+        return CooksAssistant.run();
     }
 
     @Override
