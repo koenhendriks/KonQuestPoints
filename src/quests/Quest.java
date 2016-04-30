@@ -2,6 +2,7 @@ package quests;
 
 import org.tbot.internal.handlers.LogHandler;
 import org.tbot.methods.GameObjects;
+import org.tbot.methods.GroundItems;
 import org.tbot.methods.Random;
 import org.tbot.methods.Time;
 import org.tbot.methods.walking.Path;
@@ -9,6 +10,7 @@ import org.tbot.methods.walking.Walking;
 import org.tbot.util.Condition;
 import org.tbot.wrappers.Area;
 import org.tbot.wrappers.GameObject;
+import org.tbot.wrappers.GroundItem;
 
 /**
  * Class Quest
@@ -40,8 +42,8 @@ abstract class Quest {
     }
 
     /**
-     * Go to a certain game object in an area, when found it
-     * then changes the state of the quest.
+     * Go to a certain game object in an area, when found
+     * it then changes the state of the quest.
      *
      * @param gameObject String of the game object to go to
      * @param gameObjectArea Area where the game object might be
@@ -49,17 +51,50 @@ abstract class Quest {
      */
     static void goToGameObject(final String gameObject, Area gameObjectArea, String nextState){
         GameObject go = GameObjects.getNearest(gameObject);
-        Path pathToCow = Walking.findPath(gameObjectArea.getCentralTile());
+        Path pathToGo = Walking.findPath(gameObjectArea.getCentralTile());
 
         if((go != null && !go.isOnScreen()) || go == null){
-            pathToCow.traverse();
+
+            if(pathToGo != null)
+                pathToGo.traverse();
+
             Time.sleepUntil(new Condition() {
                 @Override
                 public boolean check() {
                     return GameObjects.getNearest(gameObject) != null;
                 }
             }, Random.nextInt(800,2109));
+
         } else if (go.isOnScreen()){
+            setState(nextState);
+        }
+    }
+
+    /**
+     * Go to a certain ground item in an area, when found
+     * it then changes the state of the quest.
+     *
+     * @param groundItem String of the ground item to go to
+     * @param groundItemArea Area where the ground item might be
+     * @param nextState String to which the state will change when the ground item has been found
+     */
+    static void goToGroundItem(final String groundItem, Area groundItemArea, String nextState){
+        GroundItem gi = GroundItems.getNearest(groundItem);
+        Path pathToGi = Walking.findPath(groundItemArea.getCentralTile());
+
+        if((gi != null && !gi.isOnScreen()) || gi == null){
+
+            if(pathToGi != null)
+                pathToGi.traverse();
+
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return GroundItems.getNearest(groundItem) != null;
+                }
+            }, Random.nextInt(800,2109));
+
+        } else if (gi.isOnScreen()){
             setState(nextState);
         }
     }
