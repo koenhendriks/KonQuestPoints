@@ -1,13 +1,16 @@
 package quests;
 
+import konquestpoints.AntiBan;
 import org.tbot.internal.handlers.LogHandler;
-import org.tbot.methods.Bank;
-import org.tbot.methods.Random;
-import org.tbot.methods.Time;
+import org.tbot.internal.handlers.RandomHandler;
+import org.tbot.methods.*;
 import org.tbot.methods.tabs.Inventory;
 import org.tbot.methods.tabs.Quests;
+import org.tbot.methods.walking.Path;
+import org.tbot.methods.walking.Walking;
 import org.tbot.util.Condition;
 import org.tbot.wrappers.Area;
+import org.tbot.wrappers.GameObject;
 import org.tbot.wrappers.Tile;
 
 
@@ -31,35 +34,98 @@ public final class CooksAssistant extends Quest {
     public static final int potOfFlourId = 1933;
     public static final int bucketId = 1925;
     public static final int bucketOfMilkId = 1927;
-    public static final int dairyCowId = 2691;
     public static final int eggId = 1944;
     public static final int wheatId = 1947;
+
+    public static final String dairyCowString = "Dairy cow";
+
 
 
     public static final boolean completed = false;
 
     public boolean completed() {
-        if(Quests.isCompleted("Cook's Assistant"))
-            return true;
-        return false;
+        return Quests.isCompleted("Cook's Assistant");
     }
 
-    public static void run(){
-        if(!completed){
-            LogHandler.log("Starting cook");
+    public static int run(){
 
-            getItems();
+        if(!completed){
+
+            switch (getState()){
+                case "start":
+                    getItems();
+                    break;
+                case "walkToCow":
+                    goToCow();
+                    break;
+                case "milk":
+                    milkCow();
+                    break;
+                case "walkToWheat":
+                    walkToWheat();
+                case "stop":
+                    return -1;
+            }
+        }
+
+
+        return 500;
+    }
+
+    private static void walkToWheat(){
+
+    }
+
+    private static void milkCow() {
+        if(Inventory.contains(bucketOfMilkId)){
+            setState("walkToWheat");
+        } else {
+            GameObject dairyCow = GameObjects.getNearest(dairyCowString);
+
+            dairyCow.interact("Milk");
+
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return Inventory.contains(bucketOfMilkId);
+                }
+            }, Random.nextInt(4241,5333));
+        }
+
+
+    }
+
+    private static void goToCow() {
+
+        GameObject dairyCow = GameObjects.getNearest(dairyCowString);
+        Path pathToCow = Walking.findPath(dairyCowArea.getCentralTile());
+
+        if((dairyCow != null && !dairyCow.isOnScreen()) || dairyCow == null){
+            pathToCow.traverse();
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return GameObjects.getNearest(dairyCowString) != null;
+                }
+            }, Random.nextInt(800,2109));
+        } else if (dairyCow.isOnScreen()){
+            setState("milk");
         }
     }
 
     private static void getItems() {
-        LogHandler.log("Item check");
         if (!haveStartItems()) {
 
             if(Bank.isOpen()){
                 LogHandler.log("grab from bank");
-                Bank.withdraw(potId,1);
-                Bank.withdraw(bucketId,1);
+
+                if(Bank.contains(potId) && Bank.contains(bucketId)) {
+                    Bank.withdraw(potId, 1);
+                    Bank.withdraw(bucketId, 1);
+                } else {
+                    LogHandler.log("Don't have the items for the quests.");
+                    setState("stop");
+                }
             } else {
                 LogHandler.log("going and opening bank");
                 Bank.openNearestBank();
@@ -72,7 +138,7 @@ public final class CooksAssistant extends Quest {
             }
 
         } else {
-            LogHandler.log("i have start items");
+            setState("walkToCow");
         }
     }
 
