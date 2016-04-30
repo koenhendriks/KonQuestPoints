@@ -8,6 +8,7 @@ import org.tbot.util.Condition;
 import org.tbot.wrappers.Area;
 import org.tbot.wrappers.GameObject;
 import org.tbot.wrappers.GroundItem;
+import org.tbot.wrappers.Message;
 
 /**
  * Class Quest
@@ -15,9 +16,10 @@ import org.tbot.wrappers.GroundItem;
  * @author Koen Hendriks
  * @version 0.1 (29-04-2016)
  */
-abstract class Quest {
+abstract class Quest{
 
     private static String state = "start";
+    static Message lastMessage;
 
     /**
      * Get the current state of the quest

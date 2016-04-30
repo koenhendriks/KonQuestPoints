@@ -9,10 +9,9 @@ import org.tbot.methods.tabs.Quests;
 import org.tbot.methods.walking.Path;
 import org.tbot.methods.walking.Walking;
 import org.tbot.util.Condition;
-import org.tbot.wrappers.Area;
-import org.tbot.wrappers.GameObject;
-import org.tbot.wrappers.GroundItem;
-import org.tbot.wrappers.Tile;
+import org.tbot.wrappers.*;
+
+import java.util.Objects;
 
 
 /**
@@ -84,13 +83,71 @@ public final class CooksAssistant extends Quest {
                 case "climbWindMill":
                     climbWindMill();
                     break;
+                case "climbDownWindMill":
+                    climbDownWindMill();
+                    break;
+                case "makeFlour":
+                    makeFlour();
+                    break;
+                case "getFlour":
+                    break;
                 case "stop":
                     return -1;
             }
         }
 
+        return 200;
+    }
 
-        return 500;
+    private static void climbDownWindMill(){
+        if(getCurrentFloor() == 0) {
+            setState("getFlour");
+        } else {
+            GameObject ladder = GameObjects.getNearest(ladderString);
+            if(ladder != null && !ladder.isOnScreen()){
+                Camera.turnTo(ladder);
+            } else if(ladder != null && ladder.isOnScreen()){
+                ladder.interact("Climb-down");
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        return getCurrentFloor() == 0;
+                    }
+                }, Random.nextInt(900,1500));
+            }
+        }
+    }
+
+    private static void makeFlour(){
+        if(Inventory.contains(potOfFlourId)) {
+            setState("walkToCook");
+        } else {
+
+            GameObject hopper = GameObjects.getNearest(hopperString);
+            GameObject hopperControls = GameObjects.getNearest(hopperControlsString);
+            Item grain = Inventory.getFirst(grainId);
+
+            if(hopper != null && hopperControls != null && grain != null){
+                grain.interact("Use");
+                Mouse.move(hopper.toScreen());
+                Mouse.click(true);
+
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        return !Inventory.contains(grainId);
+                    }
+                }, Random.nextInt(1000,3000));
+
+                hopperControls.interact("Operate");
+
+                Time.sleep(Random.nextInt(2000,3000));
+
+                setState("climbDownWindMill");
+            }
+
+
+        }
     }
 
     private static void climbWindMill(){
@@ -228,6 +285,8 @@ public final class CooksAssistant extends Quest {
     private static boolean haveStartItems() {
         return ((Inventory.contains(potId) && Inventory.contains(bucketId)) || (Inventory.contains(potId) && Inventory.contains(bucketOfMilkId)) || (Inventory.contains(potOfFlourId) && Inventory.contains(bucketId)) || (Inventory.contains(potOfFlourId) && Inventory.contains(bucketOfMilkId)));
     }
+
+
 
 
 }
