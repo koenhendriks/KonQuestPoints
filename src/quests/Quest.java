@@ -62,7 +62,7 @@ abstract class Quest{
                 public boolean check() {
                     return GameObjects.getNearest(gameObject) != null;
                 }
-            }, Random.nextInt(800,2109));
+            }, Random.nextInt(1009,2376));
 
         } else if (go.distance() > 4){
             if(pathToGo != null)
@@ -73,7 +73,7 @@ abstract class Quest{
                 public boolean check() {
                     return GameObjects.getNearest(gameObject).distance() < 4;
                 }
-            }, Random.nextInt(800,2109));
+            }, Random.nextInt(1009,2376));
         } else if (go.distance() < 4){
             setState(nextState);
         }
@@ -101,7 +101,7 @@ abstract class Quest{
                 public boolean check() {
                     return GroundItems.getNearest(groundItem) != null;
                 }
-            }, Random.nextInt(800,2109));
+            }, Random.nextInt(1009,2376));
 
         } else if (gi.distance() > 4) {
             if(pathToGi != null)
@@ -112,7 +112,7 @@ abstract class Quest{
                 public boolean check() {
                     return GroundItems.getNearest(groundItem).distance() < 4;
                 }
-            }, Random.nextInt(800,2109));
+            }, Random.nextInt(1009,2376));
         } else if (gi.distance() < 4){
             setState(nextState);
         }
