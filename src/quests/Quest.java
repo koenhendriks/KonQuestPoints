@@ -64,7 +64,17 @@ abstract class Quest{
                 }
             }, Random.nextInt(800,2109));
 
-        } else if (go.isOnScreen()){
+        } else if (go.distance() > 4){
+            if(pathToGo != null)
+                pathToGo.traverse();
+
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return GameObjects.getNearest(gameObject).distance() < 4;
+                }
+            }, Random.nextInt(800,2109));
+        } else if (go.distance() < 4){
             setState(nextState);
         }
     }
@@ -93,7 +103,17 @@ abstract class Quest{
                 }
             }, Random.nextInt(800,2109));
 
-        } else if (gi.isOnScreen()){
+        } else if (gi.distance() > 4) {
+            if(pathToGi != null)
+                pathToGi.traverse();
+
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return GroundItems.getNearest(groundItem).distance() < 4;
+                }
+            }, Random.nextInt(800,2109));
+        } else if (gi.distance() < 4){
             setState(nextState);
         }
     }
