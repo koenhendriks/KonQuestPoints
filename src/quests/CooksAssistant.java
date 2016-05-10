@@ -37,6 +37,9 @@ public final class CooksAssistant extends Quest {
     public static final WidgetChild gameSetting = Widgets.getWidget(162, 6);
     public static final WidgetChild text = Widgets.getWidget(162, 43);
     public static final WidgetChild lastText = text.getChild(0);
+    public static final WidgetChild clickToContinue = Widgets.getWidget(231,2);
+    public static final WidgetChild clickToContinue2 = Widgets.getWidget(217,2);
+    public static final Widget talkOptions = Widgets.getWidget(219);
 
     public static final String eggString = "Egg";
     public static final String wheatString = "Wheat";
@@ -102,6 +105,7 @@ public final class CooksAssistant extends Quest {
                     walkToCook();
                     break;
                 case "talkToCook":
+                    talkToCook();
                     break;
                 case "stop":
                     return -1;
@@ -109,6 +113,48 @@ public final class CooksAssistant extends Quest {
         }
 
         return Random.nextInt(800,1200);
+    }
+
+    private static void talkToCook(){
+        if(completed){
+            setState("stop");
+        }else{
+            WidgetChild talk1 = Widgets.getWidgetByTextIncludingGrandChildren("What's wrong?");
+            WidgetChild talk2 = Widgets.getWidgetByTextIncludingGrandChildren("I'm always happy to help a cook in distress.");
+
+            if(clickToContinue.containsText("Click here to continue")){
+                clickToContinue.click();
+                Time.sleep(1000,3000);
+            }else if(clickToContinue2.containsText("Click here to continue")){
+                clickToContinue2.click();
+                Time.sleep(1000,3000);
+            }else if(talk2 != null){
+                talk2.click();
+                Time.sleep(1000,3000);
+            } else if(talk1 != null){
+                talk1.click();
+                Time.sleep(1000,3000);
+            } else {
+
+                final NPC cook = Npcs.getNearest(cookString);
+                if (cook != null && cook.isOnScreen()) {
+                    cook.interact("Talk-to");
+
+
+                } else if (cook != null && !cook.isOnScreen()) {
+                    Camera.turnTo(cook);
+                    Time.sleepUntil(new Condition() {
+                        @Override
+                        public boolean check() {
+                            return cook.isOnScreen();
+                        }
+                    }, Random.nextInt(1200, 2400));
+                } else if (cook == null) {
+                    setState("walkToCook");
+                }
+            }
+        }
+
     }
 
     private static void getFlour(){
