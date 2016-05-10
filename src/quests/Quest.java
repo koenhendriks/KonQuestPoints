@@ -5,10 +5,7 @@ import org.tbot.methods.*;
 import org.tbot.methods.walking.Path;
 import org.tbot.methods.walking.Walking;
 import org.tbot.util.Condition;
-import org.tbot.wrappers.Area;
-import org.tbot.wrappers.GameObject;
-import org.tbot.wrappers.GroundItem;
-import org.tbot.wrappers.Message;
+import org.tbot.wrappers.*;
 
 /**
  * Class Quest
@@ -38,6 +35,45 @@ abstract class Quest{
     static void setState(String newState) {
         LogHandler.log("State changed: "+newState);
         state = newState;
+    }
+
+    /**
+     * Go to a certain NPC in an area, when found
+     * it then changes the state of the quest.
+     *
+     * @param NPC String of the NPC to go to
+     * @param NPCArea Area where the NPC might be
+     * @param nextState String to which the state will change when the NPC has been found
+     */
+    static void goToNPC(final String NPC, Area NPCArea, String nextState){
+        NPC npcObject = Npcs.getNearest(NPC);
+        Path pathToGo = Walking.findPath(NPCArea.getCentralTile());
+
+        if((npcObject != null && !npcObject.isOnScreen()) || npcObject == null){
+
+            if(pathToGo != null)
+                pathToGo.traverse();
+
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return Npcs.getNearest(NPC) != null;
+                }
+            }, Random.nextInt(1009,2376));
+
+        } else if (npcObject.distance() > 4){
+            if(pathToGo != null)
+                pathToGo.traverse();
+
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return Npcs.getNearest(NPC).distance() < 4;
+                }
+            }, Random.nextInt(1009,2376));
+        } else if (npcObject.distance() < 4){
+            setState(nextState);
+        }
     }
 
     /**
