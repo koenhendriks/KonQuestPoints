@@ -35,6 +35,10 @@ public final class CooksAssistant extends Quest {
     public static final int bucketOfMilkId = 1927;
     public static final int grainId = 1947;
 
+    public static final WidgetChild gameSetting = Widgets.getWidget(162, 6);
+    public static final WidgetChild text = Widgets.getWidget(162, 43);
+    public static final WidgetChild lastText = text.getChild(0);
+
     public static final String eggString = "Egg";
     public static final String wheatString = "Wheat";
     public static final String dairyCowString = "Dairy cow";
@@ -43,6 +47,8 @@ public final class CooksAssistant extends Quest {
     public static final String flourBinString = "Flour bin";
     public static final String ladderString = "ladder";
 
+    public static boolean operatedHopper = false;
+    public static boolean usedHopper = false;
 
 
     public static final boolean completed = false;
@@ -90,13 +96,51 @@ public final class CooksAssistant extends Quest {
                     makeFlour();
                     break;
                 case "getFlour":
+                    getFlour();
+                    break;
+                case "walkToCook":
                     break;
                 case "stop":
                     return -1;
             }
         }
 
-        return 200;
+        return Random.nextInt(800,1200);
+    }
+
+    private static void getFlour(){
+
+        if(Inventory.contains(potOfFlourId)){
+            setState("walkToCook");
+        }else{
+            final GameObject flourBin = GameObjects.getNearest(flourBinString);
+
+            if(flourBin != null && flourBin.isOnScreen()){
+                if(flourBin.hasAction("Empty")){
+                    LogHandler.log("Empty Flour bin");
+                    flourBin.interact("Empty");
+
+                    Time.sleepUntil(new Condition() {
+                        @Override
+                        public boolean check() {
+                            return Inventory.contains(potOfFlourId);
+                        }
+                    }, Random.nextInt(2573,3871));
+
+                    setState("walkToCook");
+                }
+            } else if(flourBin != null && !flourBin.isOnScreen()){
+                Camera.turnTo(flourBin);
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        return flourBin.isOnScreen();
+                    }
+                }, Random.nextInt(2573,3871));
+            } else if(flourBin == null){
+                setState("walkToWindMill");
+            }
+        }
     }
 
     private static void climbDownWindMill(){
@@ -121,32 +165,57 @@ public final class CooksAssistant extends Quest {
     private static void makeFlour(){
         if(Inventory.contains(potOfFlourId)) {
             setState("walkToCook");
+        } else if(!Inventory.contains(grainId) && !operatedHopper && !usedHopper){
+            setState("climbDownWindMill");
         } else {
 
             GameObject hopper = GameObjects.getNearest(hopperString);
             GameObject hopperControls = GameObjects.getNearest(hopperControlsString);
             Item grain = Inventory.getFirst(grainId);
 
-            if(hopper != null && hopperControls != null && grain != null){
+            if(hopper != null && hopperControls != null && grain != null && !usedHopper) {
+                LogHandler.log("using grain with hopper!");
                 grain.interact("Use");
-                Mouse.move(hopper.toScreen());
-                Mouse.click(true);
+
+                Time.sleep(Random.nextInt(100, 500));
+
+                hopper.interact("Use grain -> Hopper");
+
+                Time.sleep(Random.nextInt(3000, 5000));
 
                 Time.sleepUntil(new Condition() {
                     @Override
                     public boolean check() {
-                        return !Inventory.contains(grainId);
+                        if (lastText.containsText("You put the grain in the hopper.") || lastText.containsText("There is already grain in the hopper.")) {
+                            usedHopper = true;
+                            return true;
+                        }
+                        return false;
                     }
-                }, Random.nextInt(1000,3000));
+                }, Random.nextInt(500,2300));
+
+            } else if(hopper != null && hopperControls != null && usedHopper && !operatedHopper) {
+
+                LogHandler.log("Operating hopper!");
 
                 hopperControls.interact("Operate");
 
-                Time.sleep(Random.nextInt(2000,3000));
+                Time.sleep(Random.nextInt(3000, 5000));
 
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        if(lastText.containsText("You operate the hopper. The grain slides down the chute.")) {
+                            operatedHopper = true;
+                            return true;
+                        }
+                        return false;
+                    }
+                },Random.nextInt(500,2000));
+
+            } else if(usedHopper && operatedHopper) {
                 setState("climbDownWindMill");
             }
-
-
         }
     }
 
