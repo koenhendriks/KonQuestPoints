@@ -54,11 +54,7 @@ public final class CooksAssistant extends Quest {
     public static boolean usedHopper = false;
 
 
-    public static final boolean completed = false;
-
-    public boolean completed() {
-        return Quests.isCompleted("Cook's Assistant");
-    }
+    public static boolean completed = false;
 
     public static int run(){
 
@@ -116,7 +112,8 @@ public final class CooksAssistant extends Quest {
     }
 
     private static void talkToCook(){
-        if(completed){
+        if(Quests.isCompleted("Cook's Assistant")){
+            completed = true;
             setState("stop");
         }else{
             WidgetChild talk1 = Widgets.getWidgetByTextIncludingGrandChildren("What's wrong?");
