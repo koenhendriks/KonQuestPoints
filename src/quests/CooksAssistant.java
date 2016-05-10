@@ -28,7 +28,6 @@ public final class CooksAssistant extends Quest {
     public static final Area wheatArea = new Area(new Tile[]  {new Tile(3155,3298,0),new Tile(3160,3297,0),new Tile(3158,3305,0),new Tile(3154,3304,0)});
     public static final Area windmillArea = new Area(new Tile[]  {new Tile(3166,3308,0)});
 
-    public static final int cookId = 4626;
     public static final int potId = 1931;
     public static final int potOfFlourId = 1933;
     public static final int bucketId = 1925;
@@ -46,6 +45,7 @@ public final class CooksAssistant extends Quest {
     public static final String hopperControlsString = "Hopper controls";
     public static final String flourBinString = "Flour bin";
     public static final String ladderString = "ladder";
+    public static final String cookString = "Cook";
 
     public static boolean operatedHopper = false;
     public static boolean usedHopper = false;
@@ -99,6 +99,9 @@ public final class CooksAssistant extends Quest {
                     getFlour();
                     break;
                 case "walkToCook":
+                    walkToCook();
+                    break;
+                case "talkToCook":
                     break;
                 case "stop":
                     return -1;
@@ -243,7 +246,7 @@ public final class CooksAssistant extends Quest {
     }
 
     private static void pickWheat(){
-        if(Inventory.contains(grainId)){
+        if(Inventory.contains(grainId) || Inventory.contains(potOfFlourId)){
             setState("walkToWindMill");
         } else {
             GameObject wheat = GameObjects.getNearest(wheatString);
@@ -323,6 +326,12 @@ public final class CooksAssistant extends Quest {
         }
     }
 
+    private static void walkToCook(){
+        if(Inventory.contains(eggString) && Inventory.contains(bucketOfMilkId) && Inventory.contains(potOfFlourId)){
+            goToNPC(cookString,cookArea,"talkToCook");
+        }
+    }
+
     private static void walkToWindMill(){
         if(!Inventory.contains(potOfFlourId))
             goToGameObject(flourBinString, windmillArea, "climbWindMill");
@@ -331,7 +340,7 @@ public final class CooksAssistant extends Quest {
     }
 
     private static void walkToWheat(){
-        if(!Inventory.contains(grainId))
+        if(!Inventory.contains(grainId) && !Inventory.contains(potOfFlourId))
             goToGameObject(wheatString, wheatArea, "pickWheat");
         else
             setState("pickWheat");
