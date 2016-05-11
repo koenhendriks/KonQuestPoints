@@ -54,14 +54,12 @@ abstract class Quest{
      * @param NPCArea Area where the NPC might be
      * @param nextState String to which the state will change when the NPC has been found
      */
-    static void goToNPC(final String NPC, Area NPCArea, String nextState){
+    static void goToNPC(final String NPC, Area NPCArea, final String nextState){
         NPC npcObject = Npcs.getNearest(NPC);
         Path pathToGo = Walking.findPath(NPCArea.getCentralTile());
 
-        if((npcObject != null && !npcObject.isOnScreen()) || npcObject == null){
-
-            if(pathToGo != null)
-                pathToGo.traverse();
+        if(((npcObject != null && !npcObject.isOnScreen()) || npcObject == null) && pathToGo != null){
+            pathToGo.traverse();
 
             Time.sleepUntil(new Condition() {
                 @Override
@@ -71,13 +69,20 @@ abstract class Quest{
             }, Random.nextInt(1009,2376));
 
         } else if (npcObject.distance() > 4){
-            if(pathToGo != null)
-                pathToGo.traverse();
+            LogHandler.log("to far");
+            Tile randomTile = randomTileInArea(NPCArea);
+            Path path = Walking.findPath(randomTile);
+            if(path != null)
+                path.traverse();
 
             Time.sleepUntil(new Condition() {
                 @Override
                 public boolean check() {
-                    return Npcs.getNearest(NPC).distance() < 4;
+                    if(Npcs.getNearest(NPC).distance() < 4){
+                        setState(nextState);
+                        return true;
+                    }
+                    return false;
                 }
             }, Random.nextInt(1009,2376));
         } else if (npcObject.distance() < 4){
@@ -93,30 +98,36 @@ abstract class Quest{
      * @param gameObjectArea Area where the game object might be
      * @param nextState String to which the state will change when the game object has been found
      */
-    static void goToGameObject(final String gameObject, Area gameObjectArea, String nextState){
+    static void goToGameObject(final String gameObject, Area gameObjectArea, final String nextState){
         GameObject go = GameObjects.getNearest(gameObject);
         Path pathToGo = Walking.findPath(gameObjectArea.getCentralTile());
 
-        if((go != null && !go.isOnScreen()) || go == null){
+        if(((go != null && !go.isOnScreen()) || go == null) && pathToGo!= null){
 
-            if(pathToGo != null)
-                pathToGo.traverse();
+            pathToGo.traverse();
 
             Time.sleepUntil(new Condition() {
                 @Override
                 public boolean check() {
-                    return GameObjects.getNearest(gameObject) != null;
+                     return GameObjects.getNearest(gameObject) != null;
                 }
             }, Random.nextInt(1009,2376));
 
         } else if (go.distance() > 4){
-            if(pathToGo != null)
-                pathToGo.traverse();
+            LogHandler.log("stuck here 2");
+            Tile randomTile = randomTileInArea(gameObjectArea);
+            Path path = Walking.findPath(randomTile);
+            if(path != null)
+                path.traverse();
 
             Time.sleepUntil(new Condition() {
                 @Override
                 public boolean check() {
-                    return GameObjects.getNearest(gameObject).distance() < 4;
+                    if(GameObjects.getNearest(gameObject).distance() < 4){
+                        setState(nextState);
+                        return true;
+                    }
+                    return false;
                 }
             }, Random.nextInt(1009,2376));
         } else if (go.distance() < 4){
@@ -124,7 +135,7 @@ abstract class Quest{
         }
     }
 
-    /**
+    /**s
      * Go to a certain ground item in an area, when found
      * it then changes the state of the quest.
      *
@@ -132,14 +143,13 @@ abstract class Quest{
      * @param groundItemArea Area where the ground item might be
      * @param nextState String to which the state will change when the ground item has been found
      */
-    static void goToGroundItem(final String groundItem, Area groundItemArea, String nextState){
+    static void goToGroundItem(final String groundItem, Area groundItemArea, final String nextState){
         GroundItem gi = GroundItems.getNearest(groundItem);
         Path pathToGi = Walking.findPath(groundItemArea.getCentralTile());
 
-        if((gi != null && !gi.isOnScreen()) || gi == null){
+        if(((gi != null && !gi.isOnScreen()) || gi == null) && pathToGi != null){
 
-            if(pathToGi != null)
-                pathToGi.traverse();
+            pathToGi.traverse();
 
             Time.sleepUntil(new Condition() {
                 @Override
@@ -149,18 +159,28 @@ abstract class Quest{
             }, Random.nextInt(1009,2376));
 
         } else if (gi.distance() > 4) {
-            if(pathToGi != null)
-                pathToGi.traverse();
+            Tile randomTile = randomTileInArea(groundItemArea);
+            Path path = Walking.findPath(randomTile);
+            if(path != null)
+                path.traverse();
 
             Time.sleepUntil(new Condition() {
                 @Override
                 public boolean check() {
-                    return GroundItems.getNearest(groundItem).distance() < 4;
+                    if(GroundItems.getNearest(groundItem).distance() < 4){
+                        setState(nextState);
+                        return true;
+                    }
+                    return false;
                 }
             }, Random.nextInt(1009,2376));
         } else if (gi.distance() < 4){
             setState(nextState);
         }
+    }
+
+    private static Tile randomTileInArea(Area area) {
+        return area.getTileArray()[Random.nextInt(0,area.getTileArray().length -1)];
     }
 
     /**
