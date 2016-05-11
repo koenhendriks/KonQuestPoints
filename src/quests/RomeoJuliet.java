@@ -47,7 +47,7 @@ public final class RomeoJuliet extends Quest {
             LogHandler.log("Romeo talk:"+talkCountRomeo+" juliet talk:"+talkCountJuliet);
             switch (getState()){
                 case "start":
-                    setState("talkToJuliet");
+                    setState("findJuliet");
                     break;
                 case "walkToBush":
                     walkToBush();
@@ -105,7 +105,7 @@ public final class RomeoJuliet extends Quest {
 
         final NPC juliet = Npcs.getNearest(julietString);
 
-        if(clickToContinue.isVisible() || clickToContinue2.isVisible() ||  clickToContinue3.isVisible()  || talkOptions.isValid()){
+        if(isTalking()){
             setState("talkToJuliet");
         }else if(juliet != null && juliet.isOnScreen() && firstDoor == null && secondDoor == null){
             LogHandler.log("Looking for julliet");
@@ -242,8 +242,12 @@ public final class RomeoJuliet extends Quest {
         }else if(clickToContinue3.isVisible()){
             clickToContinue3.click();
             Time.sleep(800,1300);
-        } else if(!clickToContinue2.isVisible() && !clickToContinue3.isVisible() && !clickToContinue.isVisible()){
+        } else if(!isTalking()){
             Time.sleep(800,1300);
+            if(!isTalking()){
+                talkCountJuliet++;
+                setState("climbHouseDown");
+            }
         }
     }
 

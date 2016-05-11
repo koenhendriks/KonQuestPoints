@@ -199,6 +199,6 @@ abstract class Quest{
     }
 
     static boolean isTalking(){
-        return clickToContinue.isVisible() && clickToContinue2.isVisible() && clickToContinue3.isVisible() && talkOptions.isValid();
+        return clickToContinue.isVisible() || clickToContinue2.isVisible() || clickToContinue3.isVisible() || talkOptions.isValid();
     }
 }
