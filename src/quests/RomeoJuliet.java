@@ -22,9 +22,11 @@ public final class RomeoJuliet extends Quest {
     public static final Area romeoArea = new Area(new Tile[]  {new Tile(3210,3415,0),new Tile(3219,3415,0),new Tile(3219,3433,0),new Tile(3207,3433,0)});
     public static final Area julietArea = new Area(new Tile[]  {new Tile(3155,3425,1)});
     public static final Area julietHouse = new Area(new Tile[]  {new Tile(3156,3434,0)});
+    public static final Area julietHouseUp = new Area(new Tile[] {new Tile(3155,3435,1)});
 
     public static final int cadavaBerryId = 753;
-    public static int talkCountRomeo = 1;
+    public static final int messageId = 755;
+    public static int talkCountRomeo = 0;
     public static int talkCountJuliet = 0;
     public static int talkCountChemist = 0;
     public static int julietFirstDoorId = 11772;
@@ -45,7 +47,7 @@ public final class RomeoJuliet extends Quest {
             LogHandler.log("Romeo talk:"+talkCountRomeo+" juliet talk:"+talkCountJuliet);
             switch (getState()){
                 case "start":
-                    setState("findJuliet");
+                    setState("talkToJuliet");
                     break;
                 case "walkToBush":
                     walkToBush();
@@ -74,6 +76,10 @@ public final class RomeoJuliet extends Quest {
                 case "findJuliet":
                     findJuliet();
                     break;
+                case "talkToJuliet":
+                    talkToJuliet();
+                    break;
+                case "walkToFatherLawrence":
                 case "stop":
                     return -1;
             }
@@ -86,22 +92,20 @@ public final class RomeoJuliet extends Quest {
         final GameObject firstDoor = GameObjects.getNearest(new Filter<GameObject>() {
             @Override
             public boolean accept(GameObject gameObject) {
-                return gameObject.getUID() == julietFirstDoorUUID;
+                return gameObject.getLocation().getX() == 3157 && gameObject.getLocation().getY() == 3430;
             }
         });
 
         final GameObject secondDoor = GameObjects.getNearest(new Filter<GameObject>() {
             @Override
             public boolean accept(GameObject gameObject) {
-                return gameObject.getUID() == julietSecondDoorUUID;
+                return gameObject.getLocation().getX() == 3158 && gameObject.getLocation().getY() == 3426;
             }
         });
 
-
-
         final NPC juliet = Npcs.getNearest(julietString);
 
-        if(clickToContinue.isVisible() || clickToContinue2.isVisible() || talkOptions.isValid()){
+        if(clickToContinue.isVisible() || clickToContinue2.isVisible() ||  clickToContinue3.isVisible()  || talkOptions.isValid()){
             setState("talkToJuliet");
         }else if(juliet != null && juliet.isOnScreen() && firstDoor == null && secondDoor == null){
             LogHandler.log("Looking for julliet");
@@ -142,7 +146,59 @@ public final class RomeoJuliet extends Quest {
     }
 
     private static void climbHouseDown() {
-        LogHandler.log("down");
+        final GameObject firstDoor = GameObjects.getNearest(new Filter<GameObject>() {
+            @Override
+            public boolean accept(GameObject gameObject) {
+                return gameObject.getLocation().getX() == 3157 && gameObject.getLocation().getY() == 3430;
+            }
+        });
+
+        final GameObject secondDoor = GameObjects.getNearest(new Filter<GameObject>() {
+            @Override
+            public boolean accept(GameObject gameObject) {
+                return gameObject.getLocation().getX() == 3158 && gameObject.getLocation().getY() == 3426;
+            }
+        });
+
+        GameObject staircase = GameObjects.getNearest(staircaseString);
+
+        if(getCurrentFloor() == 0){
+            setState("walkToRomeo");
+        }else if(staircase != null && staircase.isOnScreen() && firstDoor == null && secondDoor == null){
+            LogHandler.log("Looking for staircase");
+            staircase.interact("Climb-down");
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return getCurrentFloor() == 0;
+                }
+            },Random.nextInt(976,2173));
+        }else if(firstDoor != null && firstDoor.hasAction("Open")){
+            LogHandler.log("opening first door");
+            firstDoor.interact("Open");
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return firstDoor.hasAction("Close");
+                }
+            }, Random.nextInt(900,1400));
+
+        } else if(secondDoor != null && secondDoor.hasAction("Open")){
+            LogHandler.log("opening second door");
+
+            secondDoor.interact("Open");
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return secondDoor.hasAction("Close");
+                }
+            }, Random.nextInt(900,1400));
+        } else if(secondDoor == null && firstDoor == null){
+            Walking.walkTileMM(julietHouseUp.getCentralTile());
+            Time.sleep(900,1400);
+        }
+
+
     }
 
     private static void climbHouseUp() {
@@ -162,7 +218,7 @@ public final class RomeoJuliet extends Quest {
                         }
                         return false;
                     }
-                });
+                },Random.nextInt(856,1800));
             }else {
                 setState("walkToJulietHouse");
             }
@@ -173,12 +229,33 @@ public final class RomeoJuliet extends Quest {
         goToGameObject(staircaseString,julietHouse,"climbHouseUp");
     }
 
+    private static void talkToJuliet() {
+        if(Inventory.contains(messageId)){
+            talkCountJuliet++;
+            setState("climbHouseDown");
+        }else if(clickToContinue.isVisible()){
+            clickToContinue.click();
+            Time.sleep(800,1300);
+        }else if(clickToContinue2.isVisible()) {
+            clickToContinue2.click();
+            Time.sleep(800, 1300);
+        }else if(clickToContinue3.isVisible()){
+            clickToContinue3.click();
+            Time.sleep(800,1300);
+        } else if(!clickToContinue2.isVisible() && !clickToContinue3.isVisible() && !clickToContinue.isVisible()){
+            Time.sleep(800,1300);
+        }
+    }
+
     private static void talkToRomeo() {
         if(clickToContinue.isVisible()){
             clickToContinue.click();
             Time.sleep(800,1300);
         }else if(clickToContinue2.isVisible()){
             clickToContinue2.click();
+            Time.sleep(800,1300);
+        }else if(clickToContinue3.isVisible()){
+            clickToContinue3.click();
             Time.sleep(800,1300);
         }else if(talkOptions.isValid()){
             WidgetChild talkOptionRomeo1 = Widgets.getWidgetByTextIncludingGrandChildren("Yes, I have seen her actually!");
@@ -193,7 +270,10 @@ public final class RomeoJuliet extends Quest {
 
             if(talkOptionRomeo3 != null){
                 talkCountRomeo++;
-                setState("walkToJulietHouse");
+                if(talkCountRomeo == 1)
+                    setState("walkToJulietHouse");
+                else if(talkCountRomeo == 2)
+                    setState("walkToFatherLawrence");
             }
 
             Time.sleep(500,1500);
@@ -204,9 +284,7 @@ public final class RomeoJuliet extends Quest {
     }
 
     private static void findRomeo() {
-        if(talkCountRomeo > 1 && talkCountJuliet == 0){
-            setState("walkToJulietHouse");
-        }else if(clickToContinue.isVisible() || clickToContinue2.isVisible() || talkOptions.isValid()){
+        if(clickToContinue.isVisible() || clickToContinue2.isVisible() || clickToContinue3.isVisible() || talkOptions.isValid()){
             setState("talkToRomeo");
         }else{
             final NPC romeo = Npcs.getNearest(romeoString);

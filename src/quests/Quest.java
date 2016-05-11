@@ -179,7 +179,7 @@ abstract class Quest{
         }
     }
 
-    public static Tile randomTileInArea(Area area) {
+    static Tile randomTileInArea(Area area) {
         try{
             return area.getTileArray()[Random.nextInt(0,area.getTiles().length)];
         } catch (Exception ArrayIndexOutOfBoundsException){
@@ -196,5 +196,9 @@ abstract class Quest{
         String location = Players.getLocal().getLocation().toString();
         String floor = location.substring(location.length()-2,location.length()-1);
         return Integer.valueOf(floor);
+    }
+
+    static boolean isTalking(){
+        return clickToContinue.isVisible() && clickToContinue2.isVisible() && clickToContinue3.isVisible() && talkOptions.isValid();
     }
 }
