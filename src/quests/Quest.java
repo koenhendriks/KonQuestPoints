@@ -6,6 +6,7 @@ import org.tbot.methods.walking.Path;
 import org.tbot.methods.walking.Walking;
 import org.tbot.util.Condition;
 import org.tbot.wrappers.*;
+import sun.rmi.runtime.Log;
 
 /**
  * Class Quest
@@ -68,7 +69,7 @@ abstract class Quest{
                 }
             }, Random.nextInt(1009,2376));
 
-        } else if (npcObject.distance() > 4){
+        } else if (npcObject.distance() > 4 && pathToGo.getCost() < 66){
             LogHandler.log("to far");
             Tile randomTile = randomTileInArea(NPCArea);
             Path path = Walking.findPath(randomTile);
@@ -85,7 +86,7 @@ abstract class Quest{
                     return false;
                 }
             }, Random.nextInt(1009,2376));
-        } else if (npcObject.distance() < 4){
+        } else if (npcObject.distance() < 4 && pathToGo.getCost() < 66){
             setState(nextState);
         }
     }
@@ -100,9 +101,10 @@ abstract class Quest{
      */
     static void goToGameObject(final String gameObject, Area gameObjectArea, final String nextState){
         GameObject go = GameObjects.getNearest(gameObject);
-        Path pathToGo = Walking.findPath(gameObjectArea.getCentralTile());
+        final Path pathToGo = Walking.findPath(gameObjectArea.getCentralTile());
+        LogHandler.log(pathToGo.getCost());
 
-        if(((go != null && !go.isOnScreen()) || go == null) && pathToGo!= null){
+        if(((go != null && !go.isOnScreen()) || go == null) && pathToGo != null){
 
             pathToGo.traverse();
 
@@ -113,8 +115,7 @@ abstract class Quest{
                 }
             }, Random.nextInt(1009,2376));
 
-        } else if (go.distance() > 4){
-            LogHandler.log("stuck here 2");
+        } else if (go.distance() > 4 && pathToGo.getCost() < 66){
             Tile randomTile = randomTileInArea(gameObjectArea);
             Path path = Walking.findPath(randomTile);
             if(path != null)
@@ -130,7 +131,7 @@ abstract class Quest{
                     return false;
                 }
             }, Random.nextInt(1009,2376));
-        } else if (go.distance() < 4){
+        } else if (go.distance() < 4 && pathToGo.getCost() < 66){
             setState(nextState);
         }
     }
@@ -147,7 +148,7 @@ abstract class Quest{
         GroundItem gi = GroundItems.getNearest(groundItem);
         Path pathToGi = Walking.findPath(groundItemArea.getCentralTile());
 
-        if(((gi != null && !gi.isOnScreen()) || gi == null) && pathToGi != null){
+        if(((gi != null && !gi.isOnScreen()) || gi == null) && pathToGi != null && pathToGi.getCost() < 66){
 
             pathToGi.traverse();
 
@@ -158,7 +159,7 @@ abstract class Quest{
                 }
             }, Random.nextInt(1009,2376));
 
-        } else if (gi.distance() > 4) {
+        } else if (gi.distance() > 4 && pathToGi.getCost() < 66) {
             Tile randomTile = randomTileInArea(groundItemArea);
             Path path = Walking.findPath(randomTile);
             if(path != null)
@@ -174,13 +175,13 @@ abstract class Quest{
                     return false;
                 }
             }, Random.nextInt(1009,2376));
-        } else if (gi.distance() < 4){
+        } else if (gi.distance() < 4 && pathToGi.getCost() < 66){
             setState(nextState);
         }
     }
 
     private static Tile randomTileInArea(Area area) {
-        return area.getTileArray()[Random.nextInt(0,area.getTileArray().length -1)];
+        return area.getTileArray()[Random.nextInt(0,area.getTiles().length)];
     }
 
     /**
