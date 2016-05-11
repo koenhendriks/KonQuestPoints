@@ -15,8 +15,17 @@ import org.tbot.wrappers.*;
  */
 abstract class Quest{
 
+    /**
+     * Widgets for quest interactions with NPC's
+     */
+    public static final WidgetChild gameSetting = Widgets.getWidget(162, 6);
+    public static final WidgetChild text = Widgets.getWidget(162, 43);
+    public static final WidgetChild lastText = text.getChild(0);
+    public static final WidgetChild clickToContinue = Widgets.getWidget(231,2);
+    public static final WidgetChild clickToContinue2 = Widgets.getWidget(217,2);
+    public static final Widget talkOptions = Widgets.getWidget(219);
+
     private static String state = "start";
-    static Message lastMessage;
 
     /**
      * Get the current state of the quest

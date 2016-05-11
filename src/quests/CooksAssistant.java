@@ -35,13 +35,6 @@ public final class CooksAssistant extends Quest {
     public static final int bucketOfMilkId = 1927;
     public static final int grainId = 1947;
 
-    public static final WidgetChild gameSetting = Widgets.getWidget(162, 6);
-    public static final WidgetChild text = Widgets.getWidget(162, 43);
-    public static final WidgetChild lastText = text.getChild(0);
-    public static final WidgetChild clickToContinue = Widgets.getWidget(231,2);
-    public static final WidgetChild clickToContinue2 = Widgets.getWidget(217,2);
-    public static final Widget talkOptions = Widgets.getWidget(219);
-
     public static final String eggString = "Egg";
     public static final String wheatString = "Wheat";
     public static final String dairyCowString = "Dairy cow";
