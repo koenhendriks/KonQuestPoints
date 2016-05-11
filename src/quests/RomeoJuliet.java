@@ -6,6 +6,7 @@ import org.tbot.methods.tabs.Inventory;
 import org.tbot.methods.walking.Path;
 import org.tbot.methods.walking.Walking;
 import org.tbot.util.Condition;
+import org.tbot.util.Filter;
 import org.tbot.wrappers.*;
 import sun.rmi.runtime.Log;
 
@@ -20,25 +21,31 @@ public final class RomeoJuliet extends Quest {
     public static final Area cadavaBushArea = new Area(new Tile[]  {new Tile(3271,3369,0)});
     public static final Area romeoArea = new Area(new Tile[]  {new Tile(3210,3415,0),new Tile(3219,3415,0),new Tile(3219,3433,0),new Tile(3207,3433,0)});
     public static final Area julietArea = new Area(new Tile[]  {new Tile(3155,3425,1)});
+    public static final Area julietHouse = new Area(new Tile[]  {new Tile(3156,3434,0)});
 
     public static final int cadavaBerryId = 753;
-    public static int talkCountRomeo = 0;
+    public static int talkCountRomeo = 1;
     public static int talkCountJuliet = 0;
     public static int talkCountChemist = 0;
+    public static int julietFirstDoorId = 11772;
+    public static int julietSecondDoorId = 11773;
+    public static int julietFirstDoorUUID = 1266636597;
+    public static int julietSecondDoorUUID = 1266636086;
 
     public static final String cadavaBushString = "Cadava bush";
     public static final String romeoString = "Romeo";
     public static final String julietString = "Juliet";
+    public static final String staircaseString = "Staircase";
 
     public static boolean completed = false;
 
     public static int run(){
 
         if(!completed){
-
+            LogHandler.log("Romeo talk:"+talkCountRomeo+" juliet talk:"+talkCountJuliet);
             switch (getState()){
                 case "start":
-                    setState("walkToBush");
+                    setState("findJuliet");
                     break;
                 case "walkToBush":
                     walkToBush();
@@ -55,10 +62,17 @@ public final class RomeoJuliet extends Quest {
                 case "talkToRomeo":
                     talkToRomeo();
                     break;
-                case "walkToJuliet":
-                    walkToJuliet();
+                case "walkToJulietHouse":
+                    walkToJulietHouse();
+                    break;
+                case "climbHouseUp":
+                    climbHouseUp();
+                    break;
+                case "climbHouseDown":
+                    climbHouseDown();
                     break;
                 case "findJuliet":
+                    findJuliet();
                     break;
                 case "stop":
                     return -1;
@@ -68,8 +82,95 @@ public final class RomeoJuliet extends Quest {
         return Random.nextInt(800,1200);
     }
 
-    private static void walkToJuliet() {
-        goToNPC(julietString,julietArea,"findJuliet");
+    private static void findJuliet() {
+        final GameObject firstDoor = GameObjects.getNearest(new Filter<GameObject>() {
+            @Override
+            public boolean accept(GameObject gameObject) {
+                return gameObject.getUID() == julietFirstDoorUUID;
+            }
+        });
+
+        final GameObject secondDoor = GameObjects.getNearest(new Filter<GameObject>() {
+            @Override
+            public boolean accept(GameObject gameObject) {
+                return gameObject.getUID() == julietSecondDoorUUID;
+            }
+        });
+
+
+
+        final NPC juliet = Npcs.getNearest(julietString);
+
+        if(clickToContinue.isVisible() || clickToContinue2.isVisible() || talkOptions.isValid()){
+            setState("talkToJuliet");
+        }else if(juliet != null && juliet.isOnScreen() && firstDoor == null && secondDoor == null){
+            LogHandler.log("Looking for julliet");
+            juliet.interact("Talk-to");
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return clickToContinue.isVisible();
+                }
+            },Random.nextInt(976,2173));
+        }else if(firstDoor != null && firstDoor.hasAction("Open")){
+            LogHandler.log("opening first door");
+            firstDoor.interact("Open");
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return firstDoor.hasAction("Close");
+                }
+            }, Random.nextInt(900,1400));
+
+        } else if(secondDoor != null && secondDoor.hasAction("Open")){
+            LogHandler.log("opening second door");
+
+            secondDoor.interact("Open");
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return secondDoor.hasAction("Close");
+                }
+            }, Random.nextInt(900,1400));
+        } else if(secondDoor == null && firstDoor == null){
+            Walking.walkTileMM(julietArea.getCentralTile());
+            Time.sleep(900,1400);
+        }
+
+
+
+    }
+
+    private static void climbHouseDown() {
+        LogHandler.log("down");
+    }
+
+    private static void climbHouseUp() {
+        if(getCurrentFloor() == 1){
+            setState("findJuliet");
+        }else {
+            GameObject staircase = GameObjects.getNearest(staircaseString);
+            if(staircase != null && staircase.isOnScreen()){
+                staircase.interact("Climb-up");
+
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        if(getCurrentFloor() == 1){
+                            setState("findJuliet");
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+            }else {
+                setState("walkToJulietHouse");
+            }
+        }
+    }
+
+    private static void walkToJulietHouse() {
+        goToGameObject(staircaseString,julietHouse,"climbHouseUp");
     }
 
     private static void talkToRomeo() {
@@ -92,7 +193,7 @@ public final class RomeoJuliet extends Quest {
 
             if(talkOptionRomeo3 != null){
                 talkCountRomeo++;
-                setState("walkToJuliet");
+                setState("walkToJulietHouse");
             }
 
             Time.sleep(500,1500);
@@ -104,7 +205,7 @@ public final class RomeoJuliet extends Quest {
 
     private static void findRomeo() {
         if(talkCountRomeo > 1 && talkCountJuliet == 0){
-            setState("walkToJuliet");
+            setState("walkToJulietHouse");
         }else if(clickToContinue.isVisible() || clickToContinue2.isVisible() || talkOptions.isValid()){
             setState("talkToRomeo");
         }else{
@@ -120,7 +221,7 @@ public final class RomeoJuliet extends Quest {
                     }
                 },Random.nextInt(976,2173));
             }else if(romeo != null && !romeo.isOnScreen()){
-                Tile randomTile = romeoArea.getTileArray()[Random.nextInt(0,romeoArea.getTileArray().length)];
+                Tile randomTile = randomTileInArea(romeoArea);
                 Path path = Walking.findPath(randomTile);
                 if(path != null)
                     path.traverse();
