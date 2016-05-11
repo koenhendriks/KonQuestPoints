@@ -1,6 +1,7 @@
 package quests;
 
 import konquestpoints.AntiBan;
+import konquestpoints.MainHandler;
 import org.tbot.internal.handlers.LogHandler;
 import org.tbot.internal.handlers.RandomHandler;
 import org.tbot.methods.*;
@@ -57,7 +58,6 @@ public final class CooksAssistant extends Quest {
     public static boolean completed = false;
 
     public static int run(){
-
         if(!completed){
 
             switch (getState()){
@@ -104,8 +104,13 @@ public final class CooksAssistant extends Quest {
                     talkToCook();
                     break;
                 case "stop":
-                    return -1;
+                    LogHandler.log("Finished Cooks Assistant Quest");
+                    MainHandler.completedCooksAssistant = true;
+                    break;
             }
+        } else{
+            LogHandler.log("Finished Cooks Assistant Quest");
+            MainHandler.completedCooksAssistant = true;
         }
 
         return Random.nextInt(800,1200);
