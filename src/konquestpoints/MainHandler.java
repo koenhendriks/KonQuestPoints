@@ -6,7 +6,10 @@ import org.tbot.internal.ScriptCategory;
 import org.tbot.internal.event.events.InventoryEvent;
 import org.tbot.internal.event.listeners.InventoryListener;
 import org.tbot.internal.event.listeners.PaintListener;
+import org.tbot.internal.handlers.LogHandler;
+import org.tbot.methods.Random;
 import quests.CooksAssistant;
+import quests.RomeoJuliet;
 
 import java.awt.*;
 import java.awt.geom.Area;
@@ -20,14 +23,25 @@ import java.awt.geom.Area;
 @Manifest(name = "Kon Quest Points", authors = "Kom Op Nou", version = 1.0, description = "Gets you to 7 Quest points so you can trade and use the Grand Exchange", category = ScriptCategory.OTHER)
 public class MainHandler extends AbstractScript implements PaintListener, InventoryListener {
 
+    public static boolean completedCooksAssistant = false;
+    public static boolean completedRomeoJuliet = false;
 
     @Override
     public int loop() {
-        return CooksAssistant.run();
+//        if(!completedCooksAssistant)
+//            return CooksAssistant.run();
+//        if(!completedRomeoJuliet)
+            return RomeoJuliet.run();
+
+//        return Random.nextInt(500,2000);
     }
 
     @Override
     public boolean onStart(){
+        LogHandler.log("                                                ");
+        LogHandler.log("                 Kon's Quest Points                 ");
+        LogHandler.log("        Please report any bugs in the topic         ");
+        LogHandler.log("                                                ");
         return true;
     }
 
