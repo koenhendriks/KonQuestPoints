@@ -24,6 +24,7 @@ abstract class Quest{
     public static final WidgetChild lastText = text.getChild(0);
     public static final WidgetChild clickToContinue = Widgets.getWidget(231,2);
     public static final WidgetChild clickToContinue2 = Widgets.getWidget(217,2);
+    public static final WidgetChild clickToContinue3 = Widgets.getWidget(193,2);
     public static final Widget talkOptions = Widgets.getWidget(219);
 
     private static String state = "start";
