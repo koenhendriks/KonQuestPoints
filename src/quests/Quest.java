@@ -180,8 +180,12 @@ abstract class Quest{
         }
     }
 
-    private static Tile randomTileInArea(Area area) {
-        return area.getTileArray()[Random.nextInt(0,area.getTiles().length)];
+    public static Tile randomTileInArea(Area area) {
+        try{
+            return area.getTileArray()[Random.nextInt(0,area.getTiles().length)];
+        } catch (Exception ArrayIndexOutOfBoundsException){
+            return area.getCentralTile();
+        }
     }
 
     /**
