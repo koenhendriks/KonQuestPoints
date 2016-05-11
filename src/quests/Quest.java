@@ -70,7 +70,6 @@ abstract class Quest{
             }, Random.nextInt(1009,2376));
 
         } else if (npcObject.distance() > 4 && pathToGo.getCost() < 66){
-            LogHandler.log("to far");
             Tile randomTile = randomTileInArea(NPCArea);
             Path path = Walking.findPath(randomTile);
             if(path != null)
@@ -102,7 +101,6 @@ abstract class Quest{
     static void goToGameObject(final String gameObject, Area gameObjectArea, final String nextState){
         GameObject go = GameObjects.getNearest(gameObject);
         final Path pathToGo = Walking.findPath(gameObjectArea.getCentralTile());
-        LogHandler.log(pathToGo.getCost());
 
         if(((go != null && !go.isOnScreen()) || go == null) && pathToGo != null){
 
