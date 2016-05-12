@@ -70,7 +70,7 @@ abstract class Quest{
                 }
             }, Random.nextInt(1009,2376));
 
-        } else if (npcObject.distance() > 4 && pathToGo.getCost() < 66){
+        } else if (npcObject != null && npcObject.distance() > 4 && pathToGo.getCost() < 66){
             Tile randomTile = randomTileInArea(NPCArea);
             Path path = Walking.findPath(randomTile);
             if(path != null)
@@ -86,7 +86,7 @@ abstract class Quest{
                     return false;
                 }
             }, Random.nextInt(1009,2376));
-        } else if (npcObject.distance() < 4 && pathToGo.getCost() < 66){
+        } else if (npcObject != null && npcObject.distance() < 4 && pathToGo.getCost() < 66){
             setState(nextState);
         }
     }
@@ -114,7 +114,7 @@ abstract class Quest{
                 }
             }, Random.nextInt(1009,2376));
 
-        } else if (go.distance() > 4 && pathToGo.getCost() < 66){
+        } else if (go != null && go.distance() > 4 && pathToGo.getCost() < 66){
             Tile randomTile = randomTileInArea(gameObjectArea);
             Path path = Walking.findPath(randomTile);
             if(path != null)
@@ -130,7 +130,7 @@ abstract class Quest{
                     return false;
                 }
             }, Random.nextInt(1009,2376));
-        } else if (go.distance() < 4 && pathToGo.getCost() < 66){
+        } else if (go != null && go.distance() < 4 && pathToGo.getCost() < 66){
             setState(nextState);
         }
     }
@@ -158,7 +158,7 @@ abstract class Quest{
                 }
             }, Random.nextInt(1009,2376));
 
-        } else if (gi.distance() > 4 && pathToGi.getCost() < 66) {
+        } else if (gi != null && gi.distance() > 4 && pathToGi.getCost() < 66) {
             Tile randomTile = randomTileInArea(groundItemArea);
             Path path = Walking.findPath(randomTile);
             if(path != null)
@@ -174,7 +174,7 @@ abstract class Quest{
                     return false;
                 }
             }, Random.nextInt(1009,2376));
-        } else if (gi.distance() < 4 && pathToGi.getCost() < 66){
+        } else if (gi != null && gi.distance() < 4 && pathToGi.getCost() < 66){
             setState(nextState);
         }
     }
