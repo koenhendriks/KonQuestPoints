@@ -18,11 +18,13 @@ import sun.rmi.runtime.Log;
  */
 public final class RomeoJuliet extends Quest {
 
+    public static final Area fatherLawrenceArea = new Area(new Tile[]  {new Tile(3252,3482,0),new Tile(3259,3482,0),new Tile(3255,3484,0),new Tile(3255,3487,0),new Tile(3254,3488,0),new Tile(3253,3488,0),new Tile(3252,3487,0)});
     public static final Area cadavaBushArea = new Area(new Tile[]  {new Tile(3271,3369,0)});
     public static final Area romeoArea = new Area(new Tile[]  {new Tile(3210,3415,0),new Tile(3219,3415,0),new Tile(3219,3433,0),new Tile(3207,3433,0)});
     public static final Area julietArea = new Area(new Tile[]  {new Tile(3155,3425,1)});
     public static final Area julietHouse = new Area(new Tile[]  {new Tile(3156,3434,0)});
     public static final Area julietHouseUp = new Area(new Tile[] {new Tile(3155,3435,1)});
+
 
     public static final int cadavaBerryId = 753;
     public static final int messageId = 755;
@@ -38,6 +40,7 @@ public final class RomeoJuliet extends Quest {
     public static final String romeoString = "Romeo";
     public static final String julietString = "Juliet";
     public static final String staircaseString = "Staircase";
+    public static final String fatherLawrenceString = "Father Lawrence";
 
     public static boolean completed = false;
 
@@ -47,7 +50,7 @@ public final class RomeoJuliet extends Quest {
             LogHandler.log("Romeo talk:"+talkCountRomeo+" juliet talk:"+talkCountJuliet);
             switch (getState()){
                 case "start":
-                    setState("findJuliet");
+                    setState("walkToFatherLawrence");
                     break;
                 case "walkToBush":
                     walkToBush();
@@ -80,12 +83,78 @@ public final class RomeoJuliet extends Quest {
                     talkToJuliet();
                     break;
                 case "walkToFatherLawrence":
+                    walkToFatherLawrence();
+                    break;
+                case "findFatherLawrence":
+                    findFatherLawrence();
+                    break;
+                case "talkToFatherLawrence":
+                    talkToFatherLawrence();
                 case "stop":
                     return -1;
             }
         }
 
         return Random.nextInt(800,1200);
+    }
+
+    private static void talkToFatherLawrence() {
+        if(clickToContinue.isVisible()){
+            clickToContinue.click();
+            Time.sleep(800,1300);
+        }else if(clickToContinue2.isVisible()){
+            clickToContinue2.click();
+            Time.sleep(800,1300);
+        }else if(clickToContinue3.isVisible()) {
+            clickToContinue3.click();
+            Time.sleep(800, 1300);
+        }else{
+            WidgetChild talk = Widgets.getWidgetByTextIncludingGrandChildren("Click here to continue");
+            if(talk != null){
+                talk.click();
+                Time.sleep(800,1400);
+            }else{
+                LogHandler.log("talking to father lawrence failed.");
+                setState("walkToFatherLawrence");
+            }
+        }
+    }
+
+    private static void findFatherLawrence() {
+        if(isTalking()){
+            setState("talkToFatherLawrence");
+        }else{
+            final NPC fatherLawrence = Npcs.getNearest(fatherLawrenceString);
+            if(fatherLawrence != null && fatherLawrence.isOnScreen()){
+                Camera.turnTo(fatherLawrence);
+                Time.sleep(100,1300);
+                fatherLawrence.interact("Talk-to");
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        return isTalking();
+                    }
+                },Random.nextInt(976,2173));
+            }else if(fatherLawrence != null && !fatherLawrence.isOnScreen()){
+                Tile randomTile = randomTileInArea(fatherLawrenceArea);
+                Path path = Walking.findPath(randomTile);
+                if(path != null)
+                    path.traverse();
+
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        return fatherLawrence.isOnScreen();
+                    }
+                },Random.nextInt(712,2381));
+            }else if(fatherLawrence == null){
+                setState("walkToFatherLawrence");
+            }
+        }
+    }
+
+    private static void walkToFatherLawrence() {
+        goToNPC(fatherLawrenceString,fatherLawrenceArea,"findFatherLawrence");
     }
 
     private static void findJuliet() {
@@ -140,9 +209,6 @@ public final class RomeoJuliet extends Quest {
             Walking.walkTileMM(julietArea.getCentralTile());
             Time.sleep(900,1400);
         }
-
-
-
     }
 
     private static void climbHouseDown() {
@@ -231,7 +297,7 @@ public final class RomeoJuliet extends Quest {
 
     private static void talkToJuliet() {
         if(Inventory.contains(messageId)){
-            talkCountJuliet++;
+            talkCountJuliet = 1;
             setState("climbHouseDown");
         }else if(clickToContinue.isVisible()){
             clickToContinue.click();
@@ -274,7 +340,7 @@ public final class RomeoJuliet extends Quest {
 
             if(talkOptionRomeo3 != null){
                 talkCountRomeo++;
-                if(talkCountRomeo == 1)
+                if(talkCountRomeo < 2)
                     setState("walkToJulietHouse");
                 else if(talkCountRomeo == 2)
                     setState("walkToFatherLawrence");
@@ -288,7 +354,7 @@ public final class RomeoJuliet extends Quest {
     }
 
     private static void findRomeo() {
-        if(clickToContinue.isVisible() || clickToContinue2.isVisible() || clickToContinue3.isVisible() || talkOptions.isValid()){
+        if(isTalking()){
             setState("talkToRomeo");
         }else{
             final NPC romeo = Npcs.getNearest(romeoString);
