@@ -31,6 +31,9 @@ public class MainHandler extends AbstractScript implements PaintListener, Invent
 //        if(!completedCooksAssistant)
 //            return CooksAssistant.run();
 //        if(!completedRomeoJuliet)
+        if(completedRomeoJuliet)
+            return -1;
+        else
             return RomeoJuliet.run();
 
 //        return Random.nextInt(500,2000);

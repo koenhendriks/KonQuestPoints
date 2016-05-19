@@ -1,8 +1,10 @@
 package quests;
 
+import konquestpoints.MainHandler;
 import org.tbot.internal.handlers.LogHandler;
 import org.tbot.methods.*;
 import org.tbot.methods.tabs.Inventory;
+import org.tbot.methods.tabs.Quests;
 import org.tbot.methods.walking.Path;
 import org.tbot.methods.walking.Walking;
 import org.tbot.util.Condition;
@@ -24,13 +26,15 @@ public final class RomeoJuliet extends Quest {
     public static final Area julietArea = new Area(new Tile[]  {new Tile(3155,3425,1)});
     public static final Area julietHouse = new Area(new Tile[]  {new Tile(3156,3434,0)});
     public static final Area julietHouseUp = new Area(new Tile[] {new Tile(3155,3435,1)});
+    public static final Area apothecaryArea = new Area(new Tile[] {new Tile(3197,3404,0)});
 
 
     public static final int cadavaBerryId = 753;
     public static final int messageId = 755;
+    public static final int potionId = 756;
+
     public static int talkCountRomeo = 0;
     public static int talkCountJuliet = 0;
-    public static int talkCountChemist = 0;
     public static int julietFirstDoorId = 11772;
     public static int julietSecondDoorId = 11773;
     public static int julietFirstDoorUUID = 1266636597;
@@ -41,16 +45,17 @@ public final class RomeoJuliet extends Quest {
     public static final String julietString = "Juliet";
     public static final String staircaseString = "Staircase";
     public static final String fatherLawrenceString = "Father Lawrence";
+    public static final String apothecaryString = "apothecary";
 
+    public static boolean lastRomeoTalk = false;
     public static boolean completed = false;
 
     public static int run(){
 
         if(!completed){
-            LogHandler.log("Romeo talk:"+talkCountRomeo+" juliet talk:"+talkCountJuliet);
             switch (getState()){
                 case "start":
-                    setState("walkToFatherLawrence");
+                    setState("talkToRomeo");
                     break;
                 case "walkToBush":
                     walkToBush();
@@ -90,16 +95,30 @@ public final class RomeoJuliet extends Quest {
                     break;
                 case "talkToFatherLawrence":
                     talkToFatherLawrence();
+                    break;
+                case "walkToApo":
+                    walkToApo();
+                    break;
+                case "findApo":
+                    findApo();
+                    break;
+                case "talkToApo":
+                    talkToApo();
+                    break;
                 case "stop":
-                    return -1;
+                    LogHandler.log("Finished Romeo and Juliet Quest");
+                    MainHandler.completedRomeoJuliet = true;
+                    break;
             }
         }
 
         return Random.nextInt(800,1200);
     }
 
-    private static void talkToFatherLawrence() {
-        if(clickToContinue.isVisible()){
+    private static void talkToApo() {
+        if(Inventory.contains(potionId)){
+            setState("walkToJulietHouse");
+        }else if(clickToContinue.isVisible()){
             clickToContinue.click();
             Time.sleep(800,1300);
         }else if(clickToContinue2.isVisible()){
@@ -113,9 +132,88 @@ public final class RomeoJuliet extends Quest {
             if(talk != null){
                 talk.click();
                 Time.sleep(800,1400);
+            }else if(Inventory.contains(potionId)){
+                setState("walkToJulietHouse");
+            } else {
+                LogHandler.log("looking for widget");
+                WidgetChild endTalk = Widgets.getWidgetByTextIncludingGrandChildren("Ok, thanks.");
+                if(endTalk != null && endTalk.isValid() && endTalk.isVisible()){
+                    if(!Inventory.contains(cadavaBerryId) && !Inventory.contains(potionId))
+                        setState("walkToBush");
+                    else
+                        setState("walkToJulietHouse");
+                }else {
+                    if(!Inventory.contains(cadavaBerryId) && !Inventory.contains(potionId))
+                        setState("walkToBush");
+                    else if(Inventory.contains(potionId))
+                        setState("walkToJulietHouse");
+                    else{
+                        setState("walkToApo");
+                    }
+                }
+            }
+        }
+    }
+
+    private static void findApo() {
+        if(isTalking()){
+            setState("talkToApo");
+        }else{
+            final NPC apo = Npcs.getNearest(apothecaryString);
+            if(apo != null && apo.isOnScreen()){
+                Camera.turnTo(apo);
+                Time.sleep(100,1300);
+                apo.interact("Talk-to");
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        return isTalking();
+                    }
+                },Random.nextInt(976,2173));
+            }else if(apo != null && !apo.isOnScreen()){
+                Tile randomTile = randomTileInArea(apothecaryArea);
+                Path path = Walking.findPath(randomTile);
+                if(path != null)
+                    path.traverse();
+
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        return apo.isOnScreen();
+                    }
+                },Random.nextInt(712,2381));
+            }else if(apo == null){
+                setState("walkToApo");
+            }
+        }
+    }
+
+    private static void walkToApo() {
+        goToNPC(apothecaryString,apothecaryArea,"findApo");
+    }
+
+    private static void talkToFatherLawrence() {
+        if(clickToContinue.isVisible()){
+            LogHandler.log("clicking first");
+            clickToContinue.click();
+            Time.sleep(800,1300);
+        }else if(clickToContinue2.isVisible()){
+            LogHandler.log("clicking second");
+            clickToContinue2.click();
+            Time.sleep(800,1300);
+        }else if(clickToContinue3.isVisible()) {
+            LogHandler.log("clicking third");
+            clickToContinue3.click();
+            Time.sleep(800, 1300);
+        }else{
+            LogHandler.log("Looking for widget");
+            WidgetChild talk = Widgets.getWidgetByTextIncludingGrandChildren("Click here to continue");
+            if(talk != null){
+                LogHandler.log("clicking widget");
+                talk.click();
+                Time.sleep(800,1400);
             }else{
-                LogHandler.log("talking to father lawrence failed.");
-                setState("walkToFatherLawrence");
+                setState("walkToApo");
             }
         }
     }
@@ -310,7 +408,7 @@ public final class RomeoJuliet extends Quest {
             Time.sleep(800,1300);
         } else if(!isTalking()){
             Time.sleep(800,1300);
-            if(!isTalking()){
+            if(!isTalking() && !Inventory.contains(potionId)){
                 talkCountJuliet++;
                 setState("climbHouseDown");
             }
@@ -318,6 +416,11 @@ public final class RomeoJuliet extends Quest {
     }
 
     private static void talkToRomeo() {
+        WidgetChild lastTalk = Widgets.getWidgetByTextIncludingGrandChildren("Ah right, the potion");
+        if(lastTalk != null && lastTalk.isValid() && lastTalk.isVisible()){
+            lastRomeoTalk = true;
+        }
+
         if(clickToContinue.isVisible()){
             clickToContinue.click();
             Time.sleep(800,1300);
@@ -344,12 +447,27 @@ public final class RomeoJuliet extends Quest {
                     setState("walkToJulietHouse");
                 else if(talkCountRomeo == 2)
                     setState("walkToFatherLawrence");
+                else if(Quests.isCompleted("Romeo and Juliet")){
+                    setState("stop");
+                }
             }
 
             Time.sleep(500,1500);
         }else{
             LogHandler.log("all talking failed");
-            setState("findRomeo");
+            if(lastRomeoTalk){
+                Time.sleep(10000);
+            }
+
+            Time.sleep(2000,5000);
+
+            Widget completed = Widgets.getWidget(277);
+            if(completed != null && completed.isValid()){
+                setState("stop");
+            }else{
+                setState("talkToRomeo");
+            }
+
         }
     }
 
