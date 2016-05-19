@@ -55,7 +55,7 @@ public final class RomeoJuliet extends Quest {
         if(!completed){
             switch (getState()){
                 case "start":
-                    setState("talkToRomeo");
+                    setState("walkToBush");
                     break;
                 case "walkToBush":
                     walkToBush();

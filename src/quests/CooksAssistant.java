@@ -55,7 +55,11 @@ public final class CooksAssistant extends Quest {
 
             switch (getState()){
                 case "start":
-                    getItems();
+                    if(Quests.isCompleted("Cook's Assistant")){
+                        setState("stop");
+                    } else {
+                        getItems();
+                    }
                     break;
                 case "walkToCow":
                     walkToCow();
@@ -99,6 +103,7 @@ public final class CooksAssistant extends Quest {
                 case "stop":
                     LogHandler.log("Finished Cooks Assistant Quest");
                     MainHandler.completedCooksAssistant = true;
+                    setState("start");
                     break;
             }
         } else{
