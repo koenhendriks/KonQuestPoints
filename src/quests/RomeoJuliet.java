@@ -56,7 +56,11 @@ public final class RomeoJuliet extends Quest {
         if(!completed){
             switch (getState()){
                 case "start":
-                    setState("findJuliet");
+                    if(Quests.isCompleted("Romeo & Juliet")){
+                        setState("stop");
+                    }else{
+                        setState("walkToBush");
+                    }
                     break;
                 case "walkToBush":
                     walkToBush();
@@ -107,8 +111,8 @@ public final class RomeoJuliet extends Quest {
                     talkToApo();
                     break;
                 case "stop":
-                    if(Quests.isCompleted("Romeo and Juliet")){
-                        LogHandler.log("Finished Romeo and Juliet Quest");
+                    if(Quests.isCompleted("Romeo & Juliet")){
+                        LogHandler.log("Finished Romeo & Juliet Quest");
                         MainHandler.completedRomeoJuliet = true;
                     }
                     setState("start");
@@ -463,7 +467,7 @@ public final class RomeoJuliet extends Quest {
                 talkOptionRomeo2.click();
 
             if(talkOptionRomeo3 != null){
-                if(Quests.isCompleted("Romeo and Juliet")){
+                if(Quests.isCompleted("Romeo & Juliet")){
                     setState("stop");
                 } else {
                     talkCountRomeo++;
@@ -471,13 +475,13 @@ public final class RomeoJuliet extends Quest {
                         setState("walkToJulietHouse");
                     else if(talkCountRomeo == 2)
                         setState("walkToFatherLawrence");
-                    else if(Quests.isCompleted("Romeo and Juliet")){
+                    else if(Quests.isCompleted("Romeo & Juliet")){
                         setState("stop");
                     }
                 }
             }
 
-            if(Quests.isCompleted("Romeo and Juliet")) {
+            if(Quests.isCompleted("Romeo & Juliet")) {
                 setState("stop");
             }
 
@@ -490,7 +494,7 @@ public final class RomeoJuliet extends Quest {
 
             Time.sleep(2000,5000);
 
-            if(Quests.isCompleted("Romeo and Juliet")) {
+            if(Quests.isCompleted("Romeo & Juliet")) {
                 setState("stop");
             }
 
