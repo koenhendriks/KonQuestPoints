@@ -343,6 +343,16 @@ public final class RomeoJuliet extends Quest {
                     return getCurrentFloor() == 0;
                 }
             },Random.nextInt(976,2173));
+        }else if(secondDoor != null && secondDoor.hasAction("Open")){
+            LogHandler.log("opening second door");
+
+            secondDoor.interact("Open");
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return secondDoor.hasAction("Close");
+                }
+            }, Random.nextInt(900,1400));
         }else if(firstDoor != null && firstDoor.hasAction("Open")){
             LogHandler.log("opening first door");
             firstDoor.interact("Open");
@@ -353,17 +363,7 @@ public final class RomeoJuliet extends Quest {
                 }
             }, Random.nextInt(900,1400));
 
-        } else if(secondDoor != null && secondDoor.hasAction("Open")){
-            LogHandler.log("opening second door");
-
-            secondDoor.interact("Open");
-            Time.sleepUntil(new Condition() {
-                @Override
-                public boolean check() {
-                    return secondDoor.hasAction("Close");
-                }
-            }, Random.nextInt(900,1400));
-        } else if(secondDoor == null && firstDoor == null){
+        }  else if(secondDoor == null && firstDoor == null){
             Walking.walkTileMM(julietHouseUp.getCentralTile());
             Time.sleep(900,1400);
         }
@@ -534,7 +534,7 @@ public final class RomeoJuliet extends Quest {
         if(bush != null && bush.isOnScreen()){
             bush.interact("Pick-from");
 
-            if(lastText.containsText("More berries will grow soon.")){
+            if(lastText != null && lastText.containsText("More berries will grow soon.")){
                 LogHandler.log("No berries... Swapping world");
                 Game.instaHopNextF2P();
                 LogHandler.log("Swapping world sleep");
