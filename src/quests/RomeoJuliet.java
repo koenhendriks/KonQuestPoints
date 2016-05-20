@@ -106,8 +106,11 @@ public final class RomeoJuliet extends Quest {
                     talkToApo();
                     break;
                 case "stop":
-                    LogHandler.log("Finished Romeo and Juliet Quest");
-                    MainHandler.completedRomeoJuliet = true;
+                    if(Quests.isCompleted("Romeo and Juliet")){
+                        LogHandler.log("Finished Romeo and Juliet Quest");
+                        MainHandler.completedRomeoJuliet = true;
+                    }
+                    setState("start");
                     break;
             }
         }

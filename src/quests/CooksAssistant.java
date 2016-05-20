@@ -101,8 +101,10 @@ public final class CooksAssistant extends Quest {
                     talkToCook();
                     break;
                 case "stop":
-                    LogHandler.log("Finished Cooks Assistant Quest");
-                    MainHandler.completedCooksAssistant = true;
+                    if(Quests.isCompleted("Cook's Assistant")){
+                        LogHandler.log("Finished Cooks Assistant Quest");
+                        MainHandler.completedCooksAssistant = true;
+                    }
                     setState("start");
                     break;
             }
