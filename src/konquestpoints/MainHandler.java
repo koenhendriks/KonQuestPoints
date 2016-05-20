@@ -10,6 +10,7 @@ import org.tbot.internal.handlers.LogHandler;
 import org.tbot.methods.Random;
 import quests.CooksAssistant;
 import quests.RomeoJuliet;
+import quests.SheepShearer;
 
 import java.awt.*;
 import java.awt.geom.Area;
@@ -25,6 +26,7 @@ public class MainHandler extends AbstractScript implements PaintListener, Invent
 
     public static boolean completedCooksAssistant = false;
     public static boolean completedRomeoJuliet = false;
+    public static boolean completedSheepShearer = false;
 
     @Override
     public int loop() {
@@ -32,6 +34,8 @@ public class MainHandler extends AbstractScript implements PaintListener, Invent
             return CooksAssistant.run();
         else if(!completedRomeoJuliet)
             return RomeoJuliet.run();
+        else if(!completedSheepShearer)
+            return SheepShearer.run();
         else
             return -1;
 
