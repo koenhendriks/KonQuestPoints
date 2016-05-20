@@ -237,6 +237,11 @@ public final class CooksAssistant extends Quest {
                 Time.sleepUntil(new Condition() {
                     @Override
                     public boolean check() {
+                        if(lastText == null){
+                            WidgetChild text = Widgets.getWidget(162, 43);
+                            lastText = text.getChild(0);
+                        }
+
                         if (lastText.containsText("You put the grain in the hopper.") || lastText.containsText("There is already grain in the hopper.")) {
                             usedHopper = true;
                             return true;

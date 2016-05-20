@@ -21,7 +21,7 @@ abstract class Quest{
      */
     public static final WidgetChild gameSetting = Widgets.getWidget(162, 6);
     public static final WidgetChild text = Widgets.getWidget(162, 43);
-    public static final WidgetChild lastText = text.getChild(0);
+    public static WidgetChild lastText = text.getChild(0);
     public static final WidgetChild clickToContinue = Widgets.getWidget(231,2);
     public static final WidgetChild clickToContinue2 = Widgets.getWidget(217,2);
     public static final WidgetChild clickToContinue3 = Widgets.getWidget(193,2);
@@ -166,10 +166,8 @@ abstract class Quest{
         final Path pathToGo = Walking.findPath(gameObjectArea.getCentralTile());
 
         if(go != null && go.isOnScreen() && go.distance() < 3){
-            LogHandler.log("log0");
             setState(nextState);
         }else if(((go != null && !go.isOnScreen()) || go == null) && pathToGo != null){
-            LogHandler.log("log1");
             pathToGo.traverse();
 
             Time.sleepUntil(new Condition() {
@@ -180,7 +178,6 @@ abstract class Quest{
             }, Random.nextInt(1009,2376));
 
         } else if (go != null && go.distance() > 3 && pathToGo != null && pathToGo.getCost() < 66){
-            LogHandler.log("log2");
             Tile randomTile = randomTileInArea(gameObjectArea);
             Path path = Walking.findPath(randomTile);
             if(path != null)
@@ -197,10 +194,8 @@ abstract class Quest{
                 }
             }, Random.nextInt(1009,2376));
         } else if (go != null && go.distance() < 3 && pathToGo != null && pathToGo.getCost() < 66){
-            LogHandler.log("log3");
             setState(nextState);
         } else {
-            LogHandler.log("log4");
             Path path  = Walking.findPath(gameObjectArea.getCentralTile());
             if(path != null)
                 path.traverse();

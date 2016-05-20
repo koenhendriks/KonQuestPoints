@@ -56,7 +56,7 @@ public final class RomeoJuliet extends Quest {
         if(!completed){
             switch (getState()){
                 case "start":
-                    setState("walkToJulietHouse");
+                    setState("findJuliet");
                     break;
                 case "walkToBush":
                     walkToBush();
@@ -300,6 +300,13 @@ public final class RomeoJuliet extends Quest {
             }, Random.nextInt(900,1400));
 
         } else if(secondDoor != null && secondDoor.hasAction("Open")){
+            Camera.turnTo(secondDoor);
+            if(!secondDoor.isOnScreen()){
+                LogHandler.log("Walking to door");
+                Path path = Walking.findPath(secondDoor.getLocation());
+                if(path != null)
+                    path.traverse();
+            }
             LogHandler.log("opening second door");
 
             secondDoor.interact("Open");
@@ -399,7 +406,8 @@ public final class RomeoJuliet extends Quest {
         GameObject staircase = GameObjects.getNearest(new Filter<GameObject>() {
             @Override
             public boolean accept(GameObject gameObject) {
-                return gameObject.getUID() == staircaseUID;
+                return gameObject.getLocation().getX() == 3157 && gameObject.getLocation().getY() == 3435;
+
             }
         });
 
