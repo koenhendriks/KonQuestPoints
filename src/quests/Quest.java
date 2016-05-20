@@ -70,7 +70,7 @@ abstract class Quest{
                 }
             }, Random.nextInt(1009,2376));
 
-        } else if (npcObject != null && npcObject.distance() > 4 && pathToGo.getCost() < 66){
+        } else if (npcObject != null && npcObject.distance() > 2 && pathToGo != null && pathToGo.getCost() < 66){
             Tile randomTile = randomTileInArea(NPCArea);
             Path path = Walking.findPath(randomTile);
             if(path != null)
@@ -79,14 +79,14 @@ abstract class Quest{
             Time.sleepUntil(new Condition() {
                 @Override
                 public boolean check() {
-                    if(Npcs.getNearest(NPC).distance() < 4){
+                    if(Npcs.getNearest(NPC).distance() < 2){
                         setState(nextState);
                         return true;
                     }
                     return false;
                 }
             }, Random.nextInt(1009,2376));
-        } else if (npcObject != null && npcObject.distance() < 4 && pathToGo.getCost() < 66){
+        } else if (npcObject != null && npcObject.distance() < 2 && pathToGo != null && pathToGo.getCost() < 66){
             setState(nextState);
         }
     }
@@ -114,7 +114,7 @@ abstract class Quest{
                 }
             }, Random.nextInt(1009,2376));
 
-        } else if (go != null && go.distance() > 4 && pathToGo.getCost() < 66){
+        } else if (go != null && go.distance() > 2 && pathToGo != null && pathToGo.getCost() < 66){
             Tile randomTile = randomTileInArea(gameObjectArea);
             Path path = Walking.findPath(randomTile);
             if(path != null)
@@ -123,14 +123,14 @@ abstract class Quest{
             Time.sleepUntil(new Condition() {
                 @Override
                 public boolean check() {
-                    if(GameObjects.getNearest(gameObject).distance() < 4){
+                    if(GameObjects.getNearest(gameObject).distance() < 2){
                         setState(nextState);
                         return true;
                     }
                     return false;
                 }
             }, Random.nextInt(1009,2376));
-        } else if (go != null && go.distance() < 4 && pathToGo.getCost() < 66){
+        } else if (go != null && go.distance() < 2 && pathToGo != null && pathToGo.getCost() < 66){
             setState(nextState);
         }
     }
@@ -158,7 +158,7 @@ abstract class Quest{
                 }
             }, Random.nextInt(1009,2376));
 
-        } else if (gi != null && gi.distance() > 4 && pathToGi.getCost() < 66) {
+        } else if (gi != null && gi.distance() > 2 && pathToGi != null && pathToGi.getCost() < 66) {
             Tile randomTile = randomTileInArea(groundItemArea);
             Path path = Walking.findPath(randomTile);
             if(path != null)
@@ -167,14 +167,14 @@ abstract class Quest{
             Time.sleepUntil(new Condition() {
                 @Override
                 public boolean check() {
-                    if(GroundItems.getNearest(groundItem).distance() < 4){
+                    if(GroundItems.getNearest(groundItem).distance() < 2){
                         setState(nextState);
                         return true;
                     }
                     return false;
                 }
             }, Random.nextInt(1009,2376));
-        } else if (gi != null && gi.distance() < 4 && pathToGi.getCost() < 66){
+        } else if (gi != null && gi.distance() < 2 && pathToGi != null && pathToGi.getCost() < 66){
             setState(nextState);
         }
     }

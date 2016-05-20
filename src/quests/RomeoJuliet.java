@@ -140,8 +140,10 @@ public final class RomeoJuliet extends Quest {
                 if(endTalk != null && endTalk.isValid() && endTalk.isVisible()){
                     if(!Inventory.contains(cadavaBerryId) && !Inventory.contains(potionId))
                         setState("walkToBush");
-                    else
+                    else if(Inventory.contains(potionId))
                         setState("walkToJulietHouse");
+                    else
+                        setState("talkToApo");
                 }else {
                     if(!Inventory.contains(cadavaBerryId) && !Inventory.contains(potionId))
                         setState("walkToBush");
