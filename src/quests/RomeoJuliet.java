@@ -147,7 +147,7 @@ public final class RomeoJuliet extends Quest {
                     else if(Inventory.contains(potionId))
                         setState("walkToJulietHouse");
                     else
-                        setState("talkToApo");
+                        setState("walkToApo");
                 }else {
                     if(!Inventory.contains(cadavaBerryId) && !Inventory.contains(potionId))
                         setState("walkToBush");
@@ -455,14 +455,22 @@ public final class RomeoJuliet extends Quest {
                 talkOptionRomeo2.click();
 
             if(talkOptionRomeo3 != null){
-                talkCountRomeo++;
-                if(talkCountRomeo < 2)
-                    setState("walkToJulietHouse");
-                else if(talkCountRomeo == 2)
-                    setState("walkToFatherLawrence");
-                else if(Quests.isCompleted("Romeo and Juliet")){
+                if(Quests.isCompleted("Romeo and Juliet")){
                     setState("stop");
+                } else {
+                    talkCountRomeo++;
+                    if(talkCountRomeo < 2)
+                        setState("walkToJulietHouse");
+                    else if(talkCountRomeo == 2)
+                        setState("walkToFatherLawrence");
+                    else if(Quests.isCompleted("Romeo and Juliet")){
+                        setState("stop");
+                    }
                 }
+            }
+
+            if(Quests.isCompleted("Romeo and Juliet")) {
+                setState("stop");
             }
 
             Time.sleep(500,1500);
@@ -473,6 +481,10 @@ public final class RomeoJuliet extends Quest {
             }
 
             Time.sleep(2000,5000);
+
+            if(Quests.isCompleted("Romeo and Juliet")) {
+                setState("stop");
+            }
 
             Widget completed = Widgets.getWidget(277);
             if(completed != null && completed.isValid()){
