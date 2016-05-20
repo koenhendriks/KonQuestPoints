@@ -58,7 +58,20 @@ abstract class Quest{
      */
     static void goToNPC(final String NPC, Area NPCArea, final String nextState){
         NPC npcObject = Npcs.getNearest(NPC);
-        Path pathToGo = Walking.findPath(NPCArea.getCentralTile());
+        Tile npcTile = null;
+
+        if(npcObject != null){
+            npcTile = npcObject.getLocation();
+        }
+
+        Path pathToGo = null;
+
+        if(npcTile != null){
+            pathToGo = Walking.findPath(npcTile);
+        }else {
+            pathToGo = Walking.findPath(NPCArea.getCentralTile());
+        }
+
 
         if(((npcObject != null && !npcObject.isOnScreen()) || npcObject == null) && pathToGo != null){
             pathToGo.traverse();
@@ -71,10 +84,16 @@ abstract class Quest{
             }, Random.nextInt(1009,2376));
 
         } else if (npcObject != null && npcObject.distance() > 3 && pathToGo != null && pathToGo.getCost() < 66){
-            Tile randomTile = randomTileInArea(NPCArea);
-            Path path = Walking.findPath(randomTile);
-            if(path != null)
-                path.traverse();
+            if(npcTile != null){
+                pathToGo = Walking.findPath(npcTile);
+            }else {
+                Tile randomTile = randomTileInArea(NPCArea);
+                pathToGo = Walking.findPath(randomTile);
+            }
+
+            if(pathToGo != null)
+                pathToGo.traverse();
+
 
             Time.sleepUntil(new Condition() {
                 @Override
@@ -133,6 +152,60 @@ abstract class Quest{
         } else if (go != null && go.distance() < 3 && pathToGo != null && pathToGo.getCost() < 66){
             setState(nextState);
         }
+    }
+
+    /**
+     * Go to a certain game object in an area, when found
+     * it then changes the state of the quest.
+     *
+     * @param go String of the game object to go to
+     * @param gameObjectArea Area where the game object might be
+     * @param nextState String to which the state will change when the game object has been found
+     */
+    static void goToGameObject(final GameObject go, Area gameObjectArea, final String nextState){
+        final Path pathToGo = Walking.findPath(gameObjectArea.getCentralTile());
+
+        if(go != null && go.isOnScreen() && go.distance() < 3){
+            LogHandler.log("log0");
+            setState(nextState);
+        }else if(((go != null && !go.isOnScreen()) || go == null) && pathToGo != null){
+            LogHandler.log("log1");
+            pathToGo.traverse();
+
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return go != null;
+                }
+            }, Random.nextInt(1009,2376));
+
+        } else if (go != null && go.distance() > 3 && pathToGo != null && pathToGo.getCost() < 66){
+            LogHandler.log("log2");
+            Tile randomTile = randomTileInArea(gameObjectArea);
+            Path path = Walking.findPath(randomTile);
+            if(path != null)
+                path.traverse();
+
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    if(go.distance() < 3){
+                        setState(nextState);
+                        return true;
+                    }
+                    return false;
+                }
+            }, Random.nextInt(1009,2376));
+        } else if (go != null && go.distance() < 3 && pathToGo != null && pathToGo.getCost() < 66){
+            LogHandler.log("log3");
+            setState(nextState);
+        } else {
+            LogHandler.log("log4");
+            Path path  = Walking.findPath(gameObjectArea.getCentralTile());
+            if(path != null)
+                path.traverse();
+        }
+
     }
 
     /**s

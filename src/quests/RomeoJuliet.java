@@ -35,11 +35,12 @@ public final class RomeoJuliet extends Quest {
 
     public static int talkCountRomeo = 0;
     public static int talkCountJuliet = 0;
+    public static int staircaseUID = 1267032500;
     public static int julietFirstDoorId = 11772;
     public static int julietSecondDoorId = 11773;
     public static int julietFirstDoorUUID = 1266636597;
-    public static int julietSecondDoorUUID = 1266636086;
 
+    public static int julietSecondDoorUUID = 1266636086;
     public static final String cadavaBushString = "Cadava bush";
     public static final String romeoString = "Romeo";
     public static final String julietString = "Juliet";
@@ -55,7 +56,7 @@ public final class RomeoJuliet extends Quest {
         if(!completed){
             switch (getState()){
                 case "start":
-                    setState("walkToBush");
+                    setState("walkToJulietHouse");
                     break;
                 case "walkToBush":
                     walkToBush();
@@ -395,7 +396,14 @@ public final class RomeoJuliet extends Quest {
     }
 
     private static void walkToJulietHouse() {
-        goToGameObject(staircaseString,julietHouse,"climbHouseUp");
+        GameObject staircase = GameObjects.getNearest(new Filter<GameObject>() {
+            @Override
+            public boolean accept(GameObject gameObject) {
+                return gameObject.getUID() == staircaseUID;
+            }
+        });
+
+        goToGameObject(staircase,julietHouse,"climbHouseUp");
     }
 
     private static void talkToJuliet() {
