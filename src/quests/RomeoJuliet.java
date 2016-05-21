@@ -294,6 +294,7 @@ public final class RomeoJuliet extends Quest {
                 }
             },Random.nextInt(976,2173));
         }else if(firstDoor != null && firstDoor.hasAction("Open")){
+            Camera.turnTo(firstDoor);
             LogHandler.log("opening first door");
             firstDoor.interact("Open");
             Time.sleepUntil(new Condition() {
@@ -356,7 +357,7 @@ public final class RomeoJuliet extends Quest {
             },Random.nextInt(976,2173));
         }else if(secondDoor != null && secondDoor.hasAction("Open")){
             LogHandler.log("opening second door");
-
+            Camera.turnTo(secondDoor);
             secondDoor.interact("Open");
             Time.sleepUntil(new Condition() {
                 @Override
@@ -365,6 +366,13 @@ public final class RomeoJuliet extends Quest {
                 }
             }, Random.nextInt(900,1400));
         }else if(firstDoor != null && firstDoor.hasAction("Open")){
+            if(!firstDoor.isOnScreen()){
+                LogHandler.log("Walking to door");
+                Path path = Walking.findPath(firstDoor.getLocation());
+                if(path != null)
+                    path.traverse();
+            }
+
             LogHandler.log("opening first door");
             firstDoor.interact("Open");
             Time.sleepUntil(new Condition() {
