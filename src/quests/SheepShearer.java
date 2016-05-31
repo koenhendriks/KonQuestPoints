@@ -24,17 +24,19 @@ public class SheepShearer extends Quest implements InventoryListener{
     public static final Area fredArea = new Area(new Tile[]  {new Tile(3185,3277,0),new Tile(3185,3279,0),new Tile(3191,3278,0),new Tile(3191,3276,0),new Tile(3191,3274,0),new Tile(3191,3270,0),new Tile(3189,3271,0),new Tile(3188,3272,0),new Tile(3188,3274,0)});
     public static final Area stileArea = new Area(new Tile[]  {new Tile(3198,3277,0)});
     public static final Area sheepArea = new Area(new Tile[]  {new Tile(3194,3275,0),new Tile(3205,3275,0),new Tile(3210,3272,0),new Tile(3210,3258,0),new Tile(3197,3258,0),new Tile(3195,3263,0)});
-
+    public static final Area spinningArea = new Area(new Tile[]  {new Tile(3207,3214,1)});
 
     public static final String fredString = "Fred the Farmer";
     public static final String questString = "Sheep Shearer";
     public static final String stileString = "Stile";
     public static final String shearString = "Shear";
+    public static final String spinningWheelString = "Spinning Wheel";
 
     public static final int shearsId = 1735;
     public static final int climbStileAnimation = 839;
+    public static final int spinAnimation = 894;
     public static final int woolId = 1737;
-    public static final int ballOfWoolId = 1738;
+    public static final int ballOfWoolId = 1759;
 
     public static int woolStocked = 0;
 
@@ -48,7 +50,7 @@ public class SheepShearer extends Quest implements InventoryListener{
                     if(Quests.isCompleted(questString)){
                         setState("stop");
                     }else{
-                        setState("walkToFred");
+                        setState("walkToSpinner");
                     }
                     break;
                 case "walkToFred":
@@ -72,6 +74,12 @@ public class SheepShearer extends Quest implements InventoryListener{
                 case "shearSheeps":
                     shearSheeps();
                     break;
+                case "walkToSpinner":
+                    walkToSpinner();
+                    break;
+                case "spinWool":
+                    spinWool();
+                    break;
                 case "stop":
                     if(Quests.isCompleted(questString)){
                         LogHandler.log("Finished " +questString+" Quest");
@@ -85,11 +93,65 @@ public class SheepShearer extends Quest implements InventoryListener{
         return Random.nextInt(800,1200);
     }
 
+    private static void spinWool() {
+        GameObject door = GameObjects.getNearest(new Filter<GameObject>() {
+            @Override
+            public boolean accept(GameObject gameObject) {
+                return gameObject.getLocation().getX() == 3207 && gameObject.getLocation().getY() == 3214 && gameObject.hasAction("Open");
+            }
+        });
+
+        if(door != null){
+            door.interact("Open");
+            Time.sleep(678,1263);
+        }
+
+        GameObject spinningWheel = GameObjects.getNearest(spinningWheelString);
+
+        if(spinningWheel != null){
+            Item wool = Inventory.getFirst(woolId);
+            if(wool == null){
+                if(Inventory.getCount(ballOfWoolId) >= 20){
+                    setState("walkToFred");
+                }else{
+                    setState("walkToSpinner");
+                }
+            }else{
+                wool.interact("Use");
+                Time.sleep(600,800);
+                spinningWheel.interact("Use wool -> Spinning wheel");
+                Time.sleep(500,800);
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        return Players.getLocal().getAnimation() != spinAnimation;
+                    }
+                });
+            }
+
+        }
+    }
+
+    private static void walkToSpinner() {
+        if(Inventory.getCount(woolId) < 20){
+            setState("walkToFred");
+        }else{
+            GameObject door = GameObjects.getNearest(new Filter<GameObject>() {
+                @Override
+                public boolean accept(GameObject gameObject) {
+                    return gameObject.getLocation().getX() == 3207 && gameObject.getLocation().getY() == 3214;
+                }
+            });
+
+            goToGameObject(door,spinningArea,"spinWool");
+        }
+    }
+
     private static void shearSheeps() {
         if(!Inventory.contains(shearsId)) {
             setState("walkToFred");
         }else if(Inventory.getCount(woolId) >= 20){
-            setState("goToSpinner");
+            setState("walkToSpinner");
         }else if(Players.getLocal().getAnimation() == -1){
             NPC sheep = Npcs.getNearest(new Filter<NPC>() {
                 @Override
@@ -158,9 +220,12 @@ public class SheepShearer extends Quest implements InventoryListener{
             WidgetChild talkOptionFred5 = Widgets.getWidgetByTextIncludingGrandChildren("How are you doing getting those balls of wool?");
 
             if(talkOptionFred5 != null){
-                if(Inventory.getCount(ballOfWoolId) >= 20)
-                Time.sleep(500,1200);
-                setState("getTool");
+                if(Inventory.getCount(ballOfWoolId) >= 20){
+                    clickToContinue.click();
+                }else{
+                    Time.sleep(500,1200);
+                    setState("getTool");
+                }
             }else {
                 clickToContinue.click();
             }
@@ -332,10 +397,8 @@ public class SheepShearer extends Quest implements InventoryListener{
 
     @Override
     public void itemsAdded(InventoryEvent inventoryEvent) {
-        LogHandler.log("required item "+inventoryEvent.getItem().getID());
         if(inventoryEvent.getItem().getID() == woolId) {
             woolStocked++;
-            LogHandler.log("Got "+woolStocked+" wool");
         }
     }
 }
