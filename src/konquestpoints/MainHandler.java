@@ -22,7 +22,7 @@ import java.awt.geom.Area;
  * @version 0.1 (29-04-2016)
  */
 @Manifest(name = "Kon Quest Points", authors = "Kom Op Nou", version = 1.0, description = "Gets you to 7 Quest points so you can trade and use the Grand Exchange", category = ScriptCategory.OTHER)
-public class MainHandler extends AbstractScript implements PaintListener, InventoryListener {
+public class MainHandler extends AbstractScript implements PaintListener {
 
     public static boolean completedCooksAssistant = false;
     public static boolean completedRomeoJuliet = false;
@@ -51,17 +51,6 @@ public class MainHandler extends AbstractScript implements PaintListener, Invent
         LogHandler.log("        Please report any bugs in the topic         ");
         LogHandler.log("                                                ");
         return true;
-    }
-
-    //Inventory Listener
-    @Override
-    public void itemsRemoved(InventoryEvent inventoryEvent) {
-
-    }
-
-    @Override
-    public void itemsAdded(InventoryEvent inventoryEvent) {
-
     }
 
     //Paint Listener

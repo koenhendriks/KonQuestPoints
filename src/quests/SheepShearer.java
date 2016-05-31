@@ -1,6 +1,8 @@
 package quests;
 
 import konquestpoints.MainHandler;
+import org.tbot.internal.event.events.InventoryEvent;
+import org.tbot.internal.event.listeners.InventoryListener;
 import org.tbot.internal.handlers.LogHandler;
 import org.tbot.methods.*;
 import org.tbot.methods.tabs.Inventory;
@@ -17,17 +19,24 @@ import org.tbot.wrappers.*;
  * @author Koen Hendriks
  * @version 0.1 (20-05-2016)
  */
-public class SheepShearer extends Quest{
+public class SheepShearer extends Quest implements InventoryListener{
 
     public static final Area fredArea = new Area(new Tile[]  {new Tile(3185,3277,0),new Tile(3185,3279,0),new Tile(3191,3278,0),new Tile(3191,3276,0),new Tile(3191,3274,0),new Tile(3191,3270,0),new Tile(3189,3271,0),new Tile(3188,3272,0),new Tile(3188,3274,0)});
     public static final Area stileArea = new Area(new Tile[]  {new Tile(3198,3277,0)});
+    public static final Area sheepArea = new Area(new Tile[]  {new Tile(3194,3275,0),new Tile(3205,3275,0),new Tile(3210,3272,0),new Tile(3210,3258,0),new Tile(3197,3258,0),new Tile(3195,3263,0)});
+
 
     public static final String fredString = "Fred the Farmer";
     public static final String questString = "Sheep Shearer";
     public static final String stileString = "Stile";
+    public static final String shearString = "Shear";
 
     public static final int shearsId = 1735;
     public static final int climbStileAnimation = 839;
+    public static final int woolId = 1737;
+    public static final int ballOfWoolId = 1738;
+
+    public static int woolStocked = 0;
 
     public static boolean completed = false;
 
@@ -60,6 +69,9 @@ public class SheepShearer extends Quest{
                 case "climbStile":
                     climbStile();
                     break;
+                case "shearSheeps":
+                    shearSheeps();
+                    break;
                 case "stop":
                     if(Quests.isCompleted(questString)){
                         LogHandler.log("Finished " +questString+" Quest");
@@ -71,6 +83,45 @@ public class SheepShearer extends Quest{
         }
 
         return Random.nextInt(800,1200);
+    }
+
+    private static void shearSheeps() {
+        if(!Inventory.contains(shearsId)) {
+            setState("walkToFred");
+        }else if(Inventory.getCount(woolId) >= 20){
+            setState("goToSpinner");
+        }else if(Players.getLocal().getAnimation() == -1){
+            NPC sheep = Npcs.getNearest(new Filter<NPC>() {
+                @Override
+                public boolean accept(NPC npc) {
+                    return npc.hasAction(shearString);
+                }
+            });
+
+            if(sheep == null){
+                Walking.walkTileMM(sheepArea.getCentralTile());
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        NPC sheep = Npcs.getNearest(new Filter<NPC>() {
+                            @Override
+                            public boolean accept(NPC npc) {
+                                return npc.hasAction(shearString) && !npc.hasAction("Talk-to");
+                            }
+                        });
+                        return sheep != null;
+                    }
+                }, Random.nextInt(400,1200));
+            }else{
+                sheep.interact(shearString);
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        return Inventory.getCount(woolId) == (woolStocked +1);
+                    }
+                },Random.nextInt(3231,4321));
+            }
+        }
     }
 
     private static void climbStile() {
@@ -107,6 +158,7 @@ public class SheepShearer extends Quest{
             WidgetChild talkOptionFred5 = Widgets.getWidgetByTextIncludingGrandChildren("How are you doing getting those balls of wool?");
 
             if(talkOptionFred5 != null){
+                if(Inventory.getCount(ballOfWoolId) >= 20)
                 Time.sleep(500,1200);
                 setState("getTool");
             }else {
@@ -124,6 +176,7 @@ public class SheepShearer extends Quest{
             WidgetChild talkOptionFred2 = Widgets.getWidgetByTextIncludingGrandChildren("Yes okay. I can do that.");
             WidgetChild talkOptionFred3 = Widgets.getWidgetByTextIncludingGrandChildren("Of course!");
             WidgetChild talkOptionFred4 = Widgets.getWidgetByTextIncludingGrandChildren("I'm something of an expert actually!");
+            WidgetChild talkOptionFred5 = Widgets.getWidgetByTextIncludingGrandChildren("I'm back!");
 
             if (talkOptionFred1 != null) {
                 talkOptionFred1.click();
@@ -142,6 +195,11 @@ public class SheepShearer extends Quest{
 
             if(talkOptionFred4 != null){
                 talkOptionFred4.click();
+                Time.sleep(800,1900);
+            }
+
+            if(talkOptionFred5 != null){
+                talkOptionFred5.click();
                 Time.sleep(800,1900);
             }
         }
@@ -264,6 +322,20 @@ public class SheepShearer extends Quest{
         if(Inventory.contains(shearsId)){
             checkDoors();
             setState("walkToStile");
+        }
+    }
+
+    @Override
+    public void itemsRemoved(InventoryEvent inventoryEvent) {
+
+    }
+
+    @Override
+    public void itemsAdded(InventoryEvent inventoryEvent) {
+        LogHandler.log("required item "+inventoryEvent.getItem().getID());
+        if(inventoryEvent.getItem().getID() == woolId) {
+            woolStocked++;
+            LogHandler.log("Got "+woolStocked+" wool");
         }
     }
 }
