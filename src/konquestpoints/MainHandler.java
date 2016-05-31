@@ -30,11 +30,12 @@ public class MainHandler extends AbstractScript implements PaintListener, Invent
 
     @Override
     public int loop() {
-        if(!completedCooksAssistant)
-            return CooksAssistant.run();
-        else if(!completedRomeoJuliet)
-            return RomeoJuliet.run();
-        else if(!completedSheepShearer)
+//        if(!completedCooksAssistant)
+//            return CooksAssistant.run();
+//        else if(!completedRomeoJuliet)
+//            return RomeoJuliet.run();
+//        else
+        if(!completedSheepShearer)
             return SheepShearer.run();
         else
             return -1;

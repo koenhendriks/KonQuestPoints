@@ -3,6 +3,7 @@ package quests;
 import konquestpoints.MainHandler;
 import org.tbot.internal.handlers.LogHandler;
 import org.tbot.methods.*;
+import org.tbot.methods.tabs.Inventory;
 import org.tbot.methods.tabs.Quests;
 import org.tbot.methods.walking.Path;
 import org.tbot.methods.walking.Walking;
@@ -19,12 +20,15 @@ import org.tbot.wrappers.*;
 public class SheepShearer extends Quest{
 
     public static final Area fredArea = new Area(new Tile[]  {new Tile(3185,3277,0),new Tile(3185,3279,0),new Tile(3191,3278,0),new Tile(3191,3276,0),new Tile(3191,3274,0),new Tile(3191,3270,0),new Tile(3189,3271,0),new Tile(3188,3272,0),new Tile(3188,3274,0)});
+    public static final Area stileArea = new Area(new Tile[]  {new Tile(3198,3277,0)});
 
     public static final String fredString = "Fred the Farmer";
     public static final String questString = "Sheep Shearer";
+    public static final String stileString = "Stile";
 
+    public static final int shearsId = 1735;
+    public static final int climbStileAnimation = 839;
 
-    public static boolean talkedToFred = true;
     public static boolean completed = false;
 
     public static int run(){
@@ -47,6 +51,15 @@ public class SheepShearer extends Quest{
                 case "talkToFred":
                     talkToFred();
                     break;
+                case "getTool":
+                    getTool();
+                    break;
+                case "walkToStile":
+                    walkToStile();
+                    break;
+                case "climbStile":
+                    climbStile();
+                    break;
                 case "stop":
                     if(Quests.isCompleted(questString)){
                         LogHandler.log("Finished " +questString+" Quest");
@@ -60,11 +73,45 @@ public class SheepShearer extends Quest{
         return Random.nextInt(800,1200);
     }
 
+    private static void climbStile() {
+        GameObject stile = GameObjects.getNearest(stileString);
+        if(stile == null){
+            setState("walkToStile");
+        }else{
+            stile.interact("Climb-over");
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    if(Players.getLocal().getAnimation() == climbStileAnimation){
+                        setState("shearSheeps");
+                        return true;
+                    }
+                    return false;
+                }
+            }, Random.nextInt(1283,2351));
+        }
+    }
+
+    private static void walkToStile() {
+        if(!Inventory.contains(shearsId)){
+            setState("walkToFred");
+        }else{
+            goToGameObject(stileString,stileArea,"climbStile");
+        }
+    }
+
     private static void talkToFred() {
-        if(!isTalking()){
+        if(!isTalking()) {
             setState("findFred");
         }else if(clickToContinue.isVisible()){
-            clickToContinue.click();
+            WidgetChild talkOptionFred5 = Widgets.getWidgetByTextIncludingGrandChildren("How are you doing getting those balls of wool?");
+
+            if(talkOptionFred5 != null){
+                Time.sleep(500,1200);
+                setState("getTool");
+            }else {
+                clickToContinue.click();
+            }
             Time.sleep(800,1300);
         }else if(clickToContinue2.isVisible()){
             clickToContinue2.click();
@@ -75,22 +122,28 @@ public class SheepShearer extends Quest{
         }else if(talkOptions.isValid()) {
             WidgetChild talkOptionFred1 = Widgets.getWidgetByTextIncludingGrandChildren("I'm looking for a quest.");
             WidgetChild talkOptionFred2 = Widgets.getWidgetByTextIncludingGrandChildren("Yes okay. I can do that.");
-            WidgetChild talkOptionFred3 = Widgets.getWidgetByTextIncludingGrandChildren("Of course");
+            WidgetChild talkOptionFred3 = Widgets.getWidgetByTextIncludingGrandChildren("Of course!");
+            WidgetChild talkOptionFred4 = Widgets.getWidgetByTextIncludingGrandChildren("I'm something of an expert actually!");
 
             if (talkOptionFred1 != null) {
                 talkOptionFred1.click();
-                Time.sleep(800,1300);
+                Time.sleep(800,1000);
             }
 
             if(talkOptionFred2 != null){
                 talkOptionFred2.click();
-                Time.sleep(800,1300);
+                Time.sleep(600,1300);
             }
 
             if(talkOptionFred3 != null){
-                setState("getTool");
+                talkOptionFred3.click();
+                Time.sleep(300,800);
             }
 
+            if(talkOptionFred4 != null){
+                talkOptionFred4.click();
+                Time.sleep(800,1900);
+            }
         }
     }
 
@@ -98,29 +151,7 @@ public class SheepShearer extends Quest{
         if(isTalking()){
             setState("talkToFred");
         }else{
-            GameObject gate = GameObjects.getNearest(new Filter<GameObject>() {
-                @Override
-                public boolean accept(GameObject gameObject) {
-                    return gameObject.getLocation().getX() == 3189 && gameObject.getLocation().getY() == 3275;
-                }
-            });
-
-            GameObject door = GameObjects.getNearest(new Filter<GameObject>() {
-                @Override
-                public boolean accept(GameObject gameObject) {
-                    return gameObject.getLocation().getX() == 3188 && gameObject.getLocation().getY() == 3279;
-                }
-            });
-
-            if(gate != null && gate.hasAction("Open")){
-                gate.interact("Open");
-                Time.sleep(234,1238);
-            }
-
-            if(door != null && door.hasAction("Open")){
-                Time.sleep(345,1998);
-                door.interact("Open");
-            }
+            checkDoors();
 
             final NPC fred = Npcs.getNearest(fredString);
             if(fred != null && fred.isOnScreen()){
@@ -152,10 +183,87 @@ public class SheepShearer extends Quest{
         }
     }
 
+    private static void checkDoors() {
+        LogHandler.log("checking doors and gate");
+        GameObject gate = GameObjects.getNearest(new Filter<GameObject>() {
+            @Override
+            public boolean accept(GameObject gameObject) {
+                return gameObject.getLocation().getX() == 3189 && gameObject.getLocation().getY() == 3275;
+            }
+        });
+
+        GameObject door = GameObjects.getNearest(new Filter<GameObject>() {
+            @Override
+            public boolean accept(GameObject gameObject) {
+                return gameObject.getLocation().getX() == 3188 && gameObject.getLocation().getY() == 3279;
+            }
+        });
+
+        if (gate != null && door != null && (door.hasAction("Open") || gate.hasAction("Open"))) {
+            if (door.distance() < gate.distance()) {
+
+                if (door.hasAction("Open")) {
+                    Time.sleep(345, 1998);
+                    door.interact("Open");
+                }
+
+                if (gate.hasAction("Open")) {
+                    gate.interact("Open");
+                    Time.sleep(234, 1238);
+                }
+            } else {
+                if (gate.hasAction("Open")) {
+                    gate.interact("Open");
+                    Time.sleep(234, 1238);
+                }
+
+                if (door.hasAction("Open")) {
+                    Time.sleep(345, 1998);
+                    door.interact("Open");
+                }
+            }
+            LogHandler.log("Re-open doors and gate");
+
+            checkDoors();
+        }else if (gate != null){
+            if (gate.hasAction("Open")) {
+                gate.interact("Open");
+                Time.sleep(234, 1238);
+            }
+        }else if (door != null){
+            if (door.hasAction("Open")) {
+                Time.sleep(345, 1998);
+                door.interact("Open");
+            }
+        }
+        LogHandler.log("Doors and gate are open");
+
+    }
+
+
     private static void walkToFred() {
         if(!isTalking())
             goToNPC(fredString,fredArea,"findFred");
         else
             setState("talkToFred");
+    }
+
+    private static void getTool() {
+        checkDoors();
+        GroundItem shears = GroundItems.getNearest("Shears");
+        if(shears != null){
+            shears.interact("Take");
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return Inventory.contains(shearsId);
+                }
+            }, Random.nextInt(4000,6000));
+        }
+
+        if(Inventory.contains(shearsId)){
+            checkDoors();
+            setState("walkToStile");
+        }
     }
 }
