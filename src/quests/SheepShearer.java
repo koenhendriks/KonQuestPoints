@@ -216,6 +216,9 @@ public class SheepShearer extends Quest implements InventoryListener{
     private static void talkToFred() {
         if(!isTalking()) {
             setState("findFred");
+        }else if(Quests.isCompleted(questString)){
+            completed = true;
+            setState("stop");
         }else if(clickToContinue.isVisible()){
             WidgetChild talkOptionFred5 = Widgets.getWidgetByTextIncludingGrandChildren("How are you doing getting those balls of wool?");
 
