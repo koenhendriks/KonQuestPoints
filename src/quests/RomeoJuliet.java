@@ -454,7 +454,10 @@ public final class RomeoJuliet extends Quest {
             lastRomeoTalk = true;
         }
 
-        if(clickToContinue.isVisible()){
+        WidgetChild lawrence = Widgets.getWidgetByTextIncludingGrandChildren("Oh hello, have you seen Lather Fawrence?");
+        if(lawrence != null && lawrence.isValid() && lawrence.isVisible()){
+            setState("walkToFatherLawrence");
+        }else if(clickToContinue.isVisible()){
             clickToContinue.click();
             Time.sleep(800,1300);
         }else if(clickToContinue2.isVisible()){
