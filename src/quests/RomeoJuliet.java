@@ -451,6 +451,7 @@ public final class RomeoJuliet extends Quest {
     private static void talkToRomeo() {
         WidgetChild lastTalk = Widgets.getWidgetByTextIncludingGrandChildren("Ah right, the potion");
         if(lastTalk != null && lastTalk.isValid() && lastTalk.isVisible()){
+            LogHandler.log("now waiting for ending....");
             lastRomeoTalk = true;
         }
 
@@ -500,14 +501,18 @@ public final class RomeoJuliet extends Quest {
         }else{
             LogHandler.log("all talking failed");
             if(lastRomeoTalk){
+                LogHandler.log("waiting scene...");
                 Time.sleep(10000);
+                if(Quests.isCompleted("Romeo & Juliet")) {
+                    setState("stop");
+                }
+            }else{
+                setState("findRomeo");
             }
 
             Time.sleep(2000,5000);
 
-            if(Quests.isCompleted("Romeo & Juliet")) {
-                setState("stop");
-            }
+
 
             Widget completed = Widgets.getWidget(277);
             if(completed != null && completed.isValid()){
@@ -515,6 +520,8 @@ public final class RomeoJuliet extends Quest {
             }else{
                 setState("talkToRomeo");
             }
+
+
 
         }
     }
