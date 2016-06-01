@@ -235,7 +235,7 @@ abstract class Quest{
             Time.sleepUntil(new Condition() {
                 @Override
                 public boolean check() {
-                    if(GroundItems.getNearest(groundItem).distance() < 3){
+                    if(GroundItems.getNearest(groundItem) != null && GroundItems.getNearest(groundItem).distance() < 3){
                         setState(nextState);
                         return true;
                     }
@@ -249,7 +249,7 @@ abstract class Quest{
 
     static Tile randomTileInArea(Area area) {
         try{
-            return area.getTileArray()[Random.nextInt(0,area.getTiles().length)];
+            return area.getTileArray()[Random.nextInt(0,area.getTileArray().length)];
         } catch (Exception ArrayIndexOutOfBoundsException){
             return area.getCentralTile();
         }
