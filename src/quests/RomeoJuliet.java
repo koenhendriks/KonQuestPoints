@@ -556,9 +556,7 @@ public final class RomeoJuliet extends Quest {
 
             if(lastText != null && lastText.containsText("More berries will grow soon.")){
                 LogHandler.log("No berries... Swapping world");
-                Game.instaHopNextF2P();
-                LogHandler.log("Swapping world sleep");
-                Time.sleep(Random.nextInt(10000,15000));
+                hopWorld();
             }
 
             Time.sleepUntil(new Condition() {

@@ -50,7 +50,7 @@ public class SheepShearer extends Quest implements InventoryListener{
                     if(Quests.isCompleted(questString)){
                         setState("stop");
                     }else{
-                        setState("walkToSpinner");
+                        setState("walkToFred");
                     }
                     break;
                 case "walkToFred":
@@ -114,7 +114,7 @@ public class SheepShearer extends Quest implements InventoryListener{
                 if(Inventory.getCount(ballOfWoolId) >= 20){
                     setState("walkToFred");
                 }else{
-                    setState("walkToSpinner");
+                    setState("walkToStile");
                 }
             }else{
                 wool.interact("Use");
@@ -139,7 +139,7 @@ public class SheepShearer extends Quest implements InventoryListener{
             GameObject door = GameObjects.getNearest(new Filter<GameObject>() {
                 @Override
                 public boolean accept(GameObject gameObject) {
-                    return gameObject.getLocation().getX() == 3207 && gameObject.getLocation().getY() == 3214;
+                    return (gameObject.getLocation().getX() == 3207 || gameObject.getLocation().getX() == 3208) && gameObject.getLocation().getY() == 3214;
                 }
             });
 
@@ -156,11 +156,11 @@ public class SheepShearer extends Quest implements InventoryListener{
             NPC sheep = Npcs.getNearest(new Filter<NPC>() {
                 @Override
                 public boolean accept(NPC npc) {
-                    return npc.hasAction(shearString);
+                    return npc.hasAction(shearString) && !npc.hasAction("Talk-to");
                 }
             });
 
-            if(sheep == null){
+            if(sheep == null || !sheep.isOnScreen()){
                 Walking.walkTileMM(sheepArea.getCentralTile());
                 Time.sleepUntil(new Condition() {
                     @Override
@@ -267,6 +267,8 @@ public class SheepShearer extends Quest implements InventoryListener{
                 talkOptionFred5.click();
                 Time.sleep(800,1900);
             }
+        }else{
+            setState("stop");
         }
     }
 
@@ -275,6 +277,7 @@ public class SheepShearer extends Quest implements InventoryListener{
             setState("talkToFred");
         }else{
             checkDoors();
+
 
             final NPC fred = Npcs.getNearest(fredString);
             if(fred != null && fred.isOnScreen()){
@@ -311,39 +314,75 @@ public class SheepShearer extends Quest implements InventoryListener{
         GameObject gate = GameObjects.getNearest(new Filter<GameObject>() {
             @Override
             public boolean accept(GameObject gameObject) {
-                return gameObject.getLocation().getX() == 3189 && gameObject.getLocation().getY() == 3275;
+                return gameObject.getLocation().getX() == 3188 && gameObject.getLocation().getY() == 3279;
             }
         });
 
         GameObject door = GameObjects.getNearest(new Filter<GameObject>() {
             @Override
             public boolean accept(GameObject gameObject) {
-                return gameObject.getLocation().getX() == 3188 && gameObject.getLocation().getY() == 3279;
+                return gameObject.getLocation().getX() == 3189 && gameObject.getLocation().getY() == 3275;
             }
         });
 
-        if (gate != null && door != null && (door.hasAction("Open") || gate.hasAction("Open"))) {
+        GameObject door2 = GameObjects.getNearest(new Filter<GameObject>() {
+            @Override
+            public boolean accept(GameObject gameObject) {
+                return gameObject.getLocation().getX() == 3188 && gameObject.getLocation().getY() == 3272;
+            }
+        });
+
+        if (gate != null && door != null && door2 != null && (door.hasAction("Open") || door2.hasAction("Open") || gate.hasAction("Open"))) {
             if (door.distance() < gate.distance()) {
 
-                if (door.hasAction("Open")) {
+                if(door.distance() < door2.distance()){
+
+                    if (door.hasAction("Open"))
+                        door.interact("Open");
+
                     Time.sleep(345, 1998);
-                    door.interact("Open");
+
+                    if(door2.hasAction("Open"))
+                        door2.interact("Open");
+
+                    Time.sleep(345, 1998);
+
+                }else{
+
+                    if(door2.hasAction("Open"))
+                        door2.interact("Open");
+
+                    Time.sleep(345, 1998);
+
+                    if (door.hasAction("Open"))
+                        door.interact("Open");
+
+                    Time.sleep(345, 1998);
+
                 }
+
 
                 if (gate.hasAction("Open")) {
                     gate.interact("Open");
                     Time.sleep(234, 1238);
                 }
+
             } else {
-                if (gate.hasAction("Open")) {
-                    gate.interact("Open");
-                    Time.sleep(234, 1238);
-                }
 
-                if (door.hasAction("Open")) {
-                    Time.sleep(345, 1998);
+                if (gate.hasAction("Open"))
+                    gate.interact("Open");
+
+                Time.sleep(234, 1238);
+
+                if (door.hasAction("Open"))
                     door.interact("Open");
-                }
+
+                Time.sleep(234, 1238);
+
+                if(door2.hasAction("Open"))
+                    door2.interact("Open");
+
+                Time.sleep(345, 1998);
             }
             LogHandler.log("Re-open doors and gate");
 
@@ -355,8 +394,8 @@ public class SheepShearer extends Quest implements InventoryListener{
             }
         }else if (door != null){
             if (door.hasAction("Open")) {
-                Time.sleep(345, 1998);
                 door.interact("Open");
+                Time.sleep(345, 1998);
             }
         }
         LogHandler.log("Doors and gate are open");
@@ -373,6 +412,7 @@ public class SheepShearer extends Quest implements InventoryListener{
 
     private static void getTool() {
         checkDoors();
+
         GroundItem shears = GroundItems.getNearest("Shears");
         if(shears != null){
             shears.interact("Take");
@@ -382,6 +422,9 @@ public class SheepShearer extends Quest implements InventoryListener{
                     return Inventory.contains(shearsId);
                 }
             }, Random.nextInt(4000,6000));
+        }else {
+            LogHandler.log("No tool... hopping world");
+            hopWorld();
         }
 
         if(Inventory.contains(shearsId)){

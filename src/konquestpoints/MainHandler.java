@@ -3,6 +3,8 @@ package konquestpoints;
 import org.tbot.internal.AbstractScript;
 import org.tbot.internal.Manifest;
 import org.tbot.internal.ScriptCategory;
+import org.tbot.internal.ScriptController;
+import org.tbot.internal.breaks.BreakLoopMode;
 import org.tbot.internal.event.events.InventoryEvent;
 import org.tbot.internal.event.listeners.InventoryListener;
 import org.tbot.internal.event.listeners.PaintListener;
@@ -30,18 +32,17 @@ public class MainHandler extends AbstractScript implements PaintListener {
 
     @Override
     public int loop() {
-//        if(!completedCooksAssistant)
-//            return CooksAssistant.run();
-//        else if(!completedRomeoJuliet)
-//            return RomeoJuliet.run();
-//        else
-        if(!completedSheepShearer)
+        if(!completedCooksAssistant)
+            return CooksAssistant.run();
+        else if(!completedRomeoJuliet)
+            return RomeoJuliet.run();
+        else if(!completedSheepShearer)
             return SheepShearer.run();
-        else
+        else{
+            LogHandler.log("All quests are done! Thank you for using Konbot.");
+            LogHandler.log("Enjoy trading and using the grand exchange.");
             return -1;
-
-
-//        return Random.nextInt(500,2000);
+        }
     }
 
     @Override

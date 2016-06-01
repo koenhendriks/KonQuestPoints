@@ -255,6 +255,12 @@ abstract class Quest{
         }
     }
 
+    static void hopWorld(){
+        Game.instaHopNextF2P();
+        LogHandler.log("Swapping world sleep");
+        Time.sleep(Random.nextInt(10000,15000));
+    }
+
     /**
      * Get the floor that the player is currently on
      *
