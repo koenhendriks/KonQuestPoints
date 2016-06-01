@@ -142,7 +142,7 @@ abstract class Quest{
             Time.sleepUntil(new Condition() {
                 @Override
                 public boolean check() {
-                    if(GameObjects.getNearest(gameObject).distance() < 3){
+                    if(GameObjects.getNearest(gameObject) != null && GameObjects.getNearest(gameObject).distance() < 3){
                         setState(nextState);
                         return true;
                     }
