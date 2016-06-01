@@ -133,7 +133,7 @@ public class SheepShearer extends Quest implements InventoryListener{
     }
 
     private static void walkToSpinner() {
-        if(Inventory.getCount(woolId) < 20){
+        if(Inventory.getCount(woolId) + Inventory.getCount(ballOfWoolId) < 20){
             setState("walkToFred");
         }else{
             GameObject door = GameObjects.getNearest(new Filter<GameObject>() {
@@ -150,7 +150,7 @@ public class SheepShearer extends Quest implements InventoryListener{
     private static void shearSheeps() {
         if(!Inventory.contains(shearsId)) {
             setState("walkToFred");
-        }else if(Inventory.getCount(woolId) >= 20){
+        }else if(Inventory.getCount(woolId) + Inventory.getCount(ballOfWoolId) >= 20){
             setState("walkToSpinner");
         }else if(Players.getLocal().getAnimation() == -1){
             NPC sheep = Npcs.getNearest(new Filter<NPC>() {
