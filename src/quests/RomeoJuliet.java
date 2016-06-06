@@ -204,22 +204,18 @@ public final class RomeoJuliet extends Quest {
 
     private static void talkToFatherLawrence() {
         if(clickToContinue.isVisible()){
-            LogHandler.log("clicking first");
             clickToContinue.click();
             Time.sleep(800,1300);
         }else if(clickToContinue2.isVisible()){
-            LogHandler.log("clicking second");
             clickToContinue2.click();
             Time.sleep(800,1300);
         }else if(clickToContinue3.isVisible()) {
-            LogHandler.log("clicking third");
             clickToContinue3.click();
             Time.sleep(800, 1300);
         }else{
             LogHandler.log("Looking for widget");
             WidgetChild talk = Widgets.getWidgetByTextIncludingGrandChildren("Click here to continue");
             if(talk != null){
-                LogHandler.log("clicking widget");
                 talk.click();
                 Time.sleep(800,1400);
             }else{
