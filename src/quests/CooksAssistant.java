@@ -10,6 +10,7 @@ import org.tbot.methods.tabs.Quests;
 import org.tbot.methods.walking.Path;
 import org.tbot.methods.walking.Walking;
 import org.tbot.util.Condition;
+import org.tbot.util.Filter;
 import org.tbot.wrappers.*;
 
 import java.util.Objects;
@@ -351,14 +352,19 @@ public final class CooksAssistant extends Quest {
     }
 
     private static void getItems() {
-        if (!haveStartItems()) {
 
             if(Bank.isOpen()){
+
+                Bank.depositAll();
+
+                Time.sleep(Random.nextInt(200,500),Random.nextInt(1200,1900));
+
                 LogHandler.log("grab from bank");
 
                 if(Bank.contains(potId) && Bank.contains(bucketId)) {
                     Bank.withdraw(potId, 1);
                     Bank.withdraw(bucketId, 1);
+                    setState("walkToCow");
                 } else {
                     LogHandler.log("Don't have the items for the quests.");
                     setState("stop");
@@ -373,10 +379,6 @@ public final class CooksAssistant extends Quest {
                     }
                 }, Random.nextInt(1236,2482));
             }
-
-        } else {
-            setState("walkToCow");
-        }
     }
 
     private static void walkToCook(){
