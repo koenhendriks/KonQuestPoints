@@ -168,7 +168,7 @@ public class SheepShearer extends Quest implements InventoryListener{
                         NPC sheep = Npcs.getNearest(new Filter<NPC>() {
                             @Override
                             public boolean accept(NPC npc) {
-                                return npc.hasAction(shearString) && !npc.hasAction("Talk-to");
+                                return npc.hasAction(shearString) && !npc.hasAction("Talk-to") && sheepArea.contains(npc);
                             }
                         });
                         return sheep != null;
