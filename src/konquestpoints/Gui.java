@@ -30,7 +30,7 @@ import java.awt.*;
         gr.drawString("Antiban tabs : " + AntiBan.tabsTimer.getRemaining(), 0, 28);
         gr.drawString("Antiban mouse : " + AntiBan.mouseTimer.getRemaining(), 300, 28);
         gr.drawString("Current Quest : " + Quest.getActiveQuest(), 15, 330);
-        gr.drawString("Doing : " + Quest.getAction(), 300, 330);
+        gr.drawString("Doing : " + Quest.getAction(), 270, 330);
 
         mt.draw(gr);
     }
