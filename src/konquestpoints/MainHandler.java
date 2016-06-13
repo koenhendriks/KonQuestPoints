@@ -32,6 +32,8 @@ public class MainHandler extends AbstractScript implements PaintListener {
 
     @Override
     public int loop() {
+        AntiBan.checkTimers();
+
         if(!completedCooksAssistant)
             return CooksAssistant.run();
         else if(!completedRomeoJuliet)
@@ -57,6 +59,6 @@ public class MainHandler extends AbstractScript implements PaintListener {
     //Paint Listener
     @Override
     public void onRepaint(Graphics graphics) {
-
+        Gui.draw(graphics);
     }
 }
