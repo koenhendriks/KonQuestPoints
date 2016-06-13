@@ -6,6 +6,7 @@ import org.tbot.methods.tabs.Inventory;
 import org.tbot.methods.walking.Walking;
 import org.tbot.util.Condition;
 import org.tbot.wrappers.Timer;
+import org.tbot.wrappers.Widget;
 
 /**
  * Class AntiBan
@@ -90,33 +91,33 @@ public final class AntiBan {
 
         extraMouseMove();
 
-        if (oneIn(3)) {
-            if (!Inventory.isOpen()) {
-                LogHandler.log("[AB] Opening Inventory");
-                Inventory.openTab();
-                Time.sleepUntil(new Condition() {
-                    @Override
-                    public boolean check() {
-                        return Inventory.isOpen();
-                    }
-                }, Random.nextInt(1200, 1800));
-            } else {
-                int sRandom = Random.nextInt(1, 3);
-                if (sRandom == 1 && !Widgets.isTabOpen(Widgets.TAB_STATS)) {
-                    LogHandler.log("[AB] Opening Stats");
-                    Widgets.openTab(Widgets.TAB_STATS);
-                    extraMouseMove();
-                } else if (sRandom == 2 && !Widgets.isTabOpen(Widgets.TAB_EQUIPMENT)) {
-                    LogHandler.log("[AB] Opening Equipment");
-                    Widgets.openTab(Widgets.TAB_EQUIPMENT);
-                    extraMouseMove();
-                } else if (sRandom == 3 && !Widgets.isTabOpen(Widgets.TAB_COMBAT)) {
-                    LogHandler.log("[AB] Opening Combat");
-                    Widgets.openTab(Widgets.TAB_COMBAT);
-                    extraMouseMove();
+
+        if (!Inventory.isOpen()) {
+            LogHandler.log("[AB] Opening Inventory");
+            Inventory.openTab();
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return Inventory.isOpen();
                 }
+            }, Random.nextInt(1200, 1800));
+        } else {
+            int sRandom = Random.nextInt(1, 3);
+            if (sRandom == 1 && !Widgets.isTabOpen(Widgets.TAB_STATS)) {
+                LogHandler.log("[AB] Opening Stats");
+                Widgets.openTab(Widgets.TAB_STATS);
+                extraMouseMove();
+            } else if (sRandom == 2 && !Widgets.isTabOpen(Widgets.TAB_EQUIPMENT)) {
+                LogHandler.log("[AB] Opening Equipment");
+                Widgets.openTab(Widgets.TAB_EQUIPMENT);
+                extraMouseMove();
+            } else if (sRandom == 3 && !Widgets.isTabOpen(Widgets.TAB_COMBAT)) {
+                LogHandler.log("[AB] Opening Combat");
+                Widgets.openTab(Widgets.TAB_COMBAT);
+                extraMouseMove();
             }
         }
+
     }
 
     /**
