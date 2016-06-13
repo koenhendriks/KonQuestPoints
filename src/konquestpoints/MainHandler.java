@@ -37,8 +37,11 @@ public class MainHandler extends AbstractScript implements PaintListener {
         else if(!completedSheepShearer)
             return SheepShearer.run();
         else{
-            LogHandler.log("All quests are done! Thank you for using Konbot.");
-            LogHandler.log("Enjoy trading and using the grand exchange.");
+            LogHandler.log("==================================");
+            LogHandler.log("                     All quests are done                 ");
+            LogHandler.log("                Thank you for using Konbot                 ");
+            LogHandler.log("        Enjoy trading and using the grand exchange.      ");
+            LogHandler.log("==================================");
             Game.logout();
             Time.sleep(100,200);
             TBot.getBot().getScriptHandler().stopScript();
@@ -48,10 +51,10 @@ public class MainHandler extends AbstractScript implements PaintListener {
 
     @Override
     public boolean onStart(){
-        LogHandler.log("                                                ");
+        LogHandler.log("============================");
         LogHandler.log("                 Kon's Quest Points                 ");
         LogHandler.log("        Please report any bugs in the topic         ");
-        LogHandler.log("                                                ");
+        LogHandler.log("============================");
         return true;
     }
 
