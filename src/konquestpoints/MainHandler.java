@@ -12,7 +12,6 @@ import quests.RomeoJuliet;
 import quests.SheepShearer;
 
 import java.awt.*;
-import java.awt.geom.Area;
 
 /**
  * Class konquestpoints.MainHandler

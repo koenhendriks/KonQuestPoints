@@ -6,7 +6,6 @@ import org.tbot.methods.tabs.Inventory;
 import org.tbot.methods.walking.Walking;
 import org.tbot.util.Condition;
 import org.tbot.wrappers.Timer;
-import org.tbot.wrappers.Widget;
 
 /**
  * Class AntiBan

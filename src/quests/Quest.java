@@ -6,7 +6,6 @@ import org.tbot.methods.walking.Path;
 import org.tbot.methods.walking.Walking;
 import org.tbot.util.Condition;
 import org.tbot.wrappers.*;
-import sun.rmi.runtime.Log;
 
 /**
  * Class Quest
