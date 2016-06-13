@@ -19,12 +19,12 @@ import org.tbot.wrappers.*;
  * @author Koen Hendriks
  * @version 0.1 (20-05-2016)
  */
-public class SheepShearer extends Quest implements InventoryListener{
+public class SheepShearer extends Quest implements InventoryListener {
 
-    public static final Area fredArea = new Area(new Tile[]  {new Tile(3185,3277,0),new Tile(3185,3279,0),new Tile(3191,3278,0),new Tile(3191,3276,0),new Tile(3191,3274,0),new Tile(3191,3270,0),new Tile(3189,3271,0),new Tile(3188,3272,0),new Tile(3188,3274,0)});
-    public static final Area stileArea = new Area(new Tile[]  {new Tile(3198,3277,0)});
-    public static final Area sheepArea = new Area(new Tile[]  {new Tile(3194,3275,0),new Tile(3205,3275,0),new Tile(3210,3272,0),new Tile(3210,3258,0),new Tile(3197,3258,0),new Tile(3195,3263,0)});
-    public static final Area spinningArea = new Area(new Tile[]  {new Tile(3207,3214,1)});
+    public static final Area fredArea = new Area(new Tile[]{new Tile(3185, 3277, 0), new Tile(3185, 3279, 0), new Tile(3191, 3278, 0), new Tile(3191, 3276, 0), new Tile(3191, 3274, 0), new Tile(3191, 3270, 0), new Tile(3189, 3271, 0), new Tile(3188, 3272, 0), new Tile(3188, 3274, 0)});
+    public static final Area stileArea = new Area(new Tile[]{new Tile(3198, 3277, 0)});
+    public static final Area sheepArea = new Area(new Tile[]{new Tile(3194, 3276, 0), new Tile(3204, 3276, 0), new Tile(3211, 3265, 0), new Tile(3209, 3258, 0), new Tile(3194, 3257, 0), new Tile(3193, 3258, 0), new Tile(3193, 3275, 0)});
+    public static final Area spinningArea = new Area(new Tile[]{new Tile(3207, 3214, 1)});
 
     public static final String fredString = "Fred the Farmer";
     public static final String questString = "Sheep Shearer";
@@ -42,17 +42,17 @@ public class SheepShearer extends Quest implements InventoryListener{
 
     public static boolean completed = false;
 
-    public static int run(){
+    public static int run() {
 
-        if(!completed){
+        if (!completed) {
 
             setActiveQuest(questString);
 
-            switch (getState()){
+            switch (getState()) {
                 case "start":
-                    if(Quests.isCompleted(questString)){
+                    if (Quests.isCompleted(questString)) {
                         setState("stop");
-                    }else{
+                    } else {
                         setState("walkToFred");
                     }
                     break;
@@ -84,8 +84,8 @@ public class SheepShearer extends Quest implements InventoryListener{
                     spinWool();
                     break;
                 case "stop":
-                    if(Quests.isCompleted(questString)){
-                        LogHandler.log("Finished " +questString+" Quest");
+                    if (Quests.isCompleted(questString)) {
+                        LogHandler.log("Finished " + questString + " Quest");
                         MainHandler.completedSheepShearer = true;
                     }
                     setState("start");
@@ -93,10 +93,11 @@ public class SheepShearer extends Quest implements InventoryListener{
             }
         }
 
-        return Random.nextInt(800,1200);
+        return Random.nextInt(800, 1200);
     }
 
     private static void spinWool() {
+        setAction("Spinning 20 wool");
         GameObject door = GameObjects.getNearest(new Filter<GameObject>() {
             @Override
             public boolean accept(GameObject gameObject) {
@@ -104,26 +105,26 @@ public class SheepShearer extends Quest implements InventoryListener{
             }
         });
 
-        if(door != null){
+        if (door != null) {
             door.interact("Open");
-            Time.sleep(678,1263);
+            Time.sleep(678, 1263);
         }
 
         GameObject spinningWheel = GameObjects.getNearest(spinningWheelString);
 
-        if(spinningWheel != null){
+        if (spinningWheel != null) {
             Item wool = Inventory.getFirst(woolId);
-            if(wool == null){
-                if(Inventory.getCount(ballOfWoolId) >= 20){
+            if (wool == null) {
+                if (Inventory.getCount(ballOfWoolId) >= 20) {
                     setState("walkToFred");
-                }else{
+                } else {
                     setState("walkToStile");
                 }
-            }else{
+            } else {
                 wool.interact("Use");
-                Time.sleep(600,800);
+                Time.sleep(600, 800);
                 spinningWheel.interact("Use wool -> Spinning wheel");
-                Time.sleep(500,800);
+                Time.sleep(500, 800);
                 Time.sleepUntil(new Condition() {
                     @Override
                     public boolean check() {
@@ -136,9 +137,10 @@ public class SheepShearer extends Quest implements InventoryListener{
     }
 
     private static void walkToSpinner() {
-        if(Inventory.getCount(woolId) + Inventory.getCount(ballOfWoolId) < 20){
+        if (Inventory.getCount(woolId) + Inventory.getCount(ballOfWoolId) < 20) {
             setState("walkToFred");
-        }else{
+        } else {
+            setAction("Walking to spinning wheel");
             GameObject door = GameObjects.getNearest(new Filter<GameObject>() {
                 @Override
                 public boolean accept(GameObject gameObject) {
@@ -146,16 +148,19 @@ public class SheepShearer extends Quest implements InventoryListener{
                 }
             });
 
-            goToGameObject(door,spinningArea,"spinWool");
+            goToGameObject(door, spinningArea, "spinWool");
         }
     }
 
     private static void shearSheeps() {
-        if(!Inventory.contains(shearsId)) {
+        if (!Inventory.contains(shearsId)) {
             setState("walkToFred");
-        }else if(Inventory.getCount(woolId) + Inventory.getCount(ballOfWoolId) >= 20){
+        } else if (Inventory.getCount(woolId) + Inventory.getCount(ballOfWoolId) >= 20) {
             setState("walkToSpinner");
-        }else if(Players.getLocal().getAnimation() == -1){
+        } else if (!sheepArea.contains(Players.getLocal())) {
+            setState("walkToStile");
+        } else if (Players.getLocal().getAnimation() == -1) {
+            setAction("Shearing sheeps!");
             NPC sheep = Npcs.getNearest(new Filter<NPC>() {
                 @Override
                 public boolean accept(NPC npc) {
@@ -163,7 +168,7 @@ public class SheepShearer extends Quest implements InventoryListener{
                 }
             });
 
-            if(sheep == null || !sheep.isOnScreen()){
+            if (sheep == null || !sheep.isOnScreen()) {
                 Walking.walkTileMM(sheepArea.getCentralTile());
                 Time.sleepUntil(new Condition() {
                     @Override
@@ -176,73 +181,72 @@ public class SheepShearer extends Quest implements InventoryListener{
                         });
                         return sheep != null;
                     }
-                }, Random.nextInt(400,1200));
-            }else{
+                }, Random.nextInt(400, 1200));
+            } else {
                 sheep.interact(shearString);
                 Time.sleepUntil(new Condition() {
                     @Override
                     public boolean check() {
-                        return Inventory.getCount(woolId) == (woolStocked +1);
+                        return Inventory.getCount(woolId) == (woolStocked + 1);
                     }
-                },Random.nextInt(3231,4321));
+                }, Random.nextInt(3231, 4321));
             }
         }
     }
 
     private static void climbStile() {
         GameObject stile = GameObjects.getNearest(stileString);
-        if(stile == null){
+        if (stile == null) {
             setState("walkToStile");
-        }else{
+        } else {
+            setAction("Climbing over stile");
             stile.interact("Climb-over");
-            Time.sleepUntil(new Condition() {
-                @Override
-                public boolean check() {
-                    if(Players.getLocal().getAnimation() == climbStileAnimation){
-                        setState("shearSheeps");
-                        return true;
-                    }
-                    return false;
-                }
-            }, Random.nextInt(1283,2351));
+            Time.sleep(3211,5632);
+            Walking.walkTileMM(sheepArea.getCentralTile());
+            setState("shearSheeps");
         }
     }
 
     private static void walkToStile() {
-        if(!Inventory.contains(shearsId)){
+        if (!Inventory.contains(shearsId)) {
             setState("walkToFred");
-        }else{
-            goToGameObject(stileString,stileArea,"climbStile");
+        } else {
+            setAction("Walking to Stile");
+            goToGameObject(stileString, stileArea, "climbStile");
         }
     }
 
     private static void talkToFred() {
-        if(!isTalking()) {
+        if (!isTalking()) {
             setState("findFred");
-        }else if(Quests.isCompleted(questString)){
+        } else if (Quests.isCompleted(questString)) {
             completed = true;
             setState("stop");
-        }else if(clickToContinue.isVisible()){
+        } else if (clickToContinue.isVisible()) {
+            setAction("Talking to Fred");
             WidgetChild talkOptionFred5 = Widgets.getWidgetByTextIncludingGrandChildren("How are you doing getting those balls of wool?");
 
-            if(talkOptionFred5 != null){
-                if(Inventory.getCount(ballOfWoolId) >= 20){
+            if (talkOptionFred5 != null) {
+                if (Inventory.getCount(ballOfWoolId) >= 20) {
                     clickToContinue.click();
-                }else{
-                    Time.sleep(500,1200);
+                } else {
+                    Time.sleep(500, 1200);
                     setState("getTool");
                 }
-            }else {
+            } else {
                 clickToContinue.click();
             }
-            Time.sleep(800,1300);
-        }else if(clickToContinue2.isVisible()){
+            Time.sleep(800, 1300);
+        } else if (clickToContinue2.isVisible()) {
+            setAction("Talking to Fred");
             clickToContinue2.click();
-            Time.sleep(800,1300);
-        }else if(clickToContinue3.isVisible()){
+            Time.sleep(800, 1300);
+        } else if (clickToContinue3.isVisible()) {
+            setAction("Talking to Fred");
             clickToContinue3.click();
-            Time.sleep(800,1300);
-        }else if(talkOptions.isValid()) {
+            Time.sleep(800, 1300);
+        } else if (talkOptions.isValid()) {
+            setAction("Talking to Fred");
             WidgetChild talkOptionFred1 = Widgets.getWidgetByTextIncludingGrandChildren("I'm looking for a quest.");
             WidgetChild talkOptionFred2 = Widgets.getWidgetByTextIncludingGrandChildren("Yes okay. I can do that.");
             WidgetChild talkOptionFred3 = Widgets.getWidgetByTextIncludingGrandChildren("Of course!");
@@ -251,55 +255,56 @@ public class SheepShearer extends Quest implements InventoryListener{
 
             if (talkOptionFred1 != null) {
                 talkOptionFred1.click();
-                Time.sleep(800,1000);
+                Time.sleep(800, 1000);
             }
 
-            if(talkOptionFred2 != null){
+            if (talkOptionFred2 != null) {
                 talkOptionFred2.click();
-                Time.sleep(600,1300);
+                Time.sleep(600, 1300);
             }
 
-            if(talkOptionFred3 != null){
+            if (talkOptionFred3 != null) {
                 talkOptionFred3.click();
-                Time.sleep(300,800);
+                Time.sleep(300, 800);
             }
 
-            if(talkOptionFred4 != null){
+            if (talkOptionFred4 != null) {
                 talkOptionFred4.click();
-                Time.sleep(800,1900);
+                Time.sleep(800, 1900);
             }
 
-            if(talkOptionFred5 != null){
+            if (talkOptionFred5 != null) {
                 talkOptionFred5.click();
-                Time.sleep(800,1900);
+                Time.sleep(800, 1900);
             }
-        }else{
+        } else {
             setState("stop");
         }
     }
 
     private static void findFred() {
-        if(isTalking()){
+        if (isTalking()) {
             setState("talkToFred");
-        }else{
+        } else {
+            setAction("Looking for Fred");
             checkDoors();
 
 
             final NPC fred = Npcs.getNearest(fredString);
-            if(fred != null && fred.isOnScreen()){
+            if (fred != null && fred.isOnScreen()) {
                 Camera.turnTo(fred);
-                Time.sleep(100,1300);
+                Time.sleep(100, 1300);
                 fred.interact("Talk-to");
                 Time.sleepUntil(new Condition() {
                     @Override
                     public boolean check() {
                         return clickToContinue.isVisible();
                     }
-                },Random.nextInt(976,2173));
-            }else if(fred != null && !fred.isOnScreen()){
+                }, Random.nextInt(976, 2173));
+            } else if (fred != null && !fred.isOnScreen()) {
                 Tile randomTile = randomTileInArea(fredArea);
                 Path path = Walking.findPath(randomTile);
-                if(path != null)
+                if (path != null)
                     path.traverse();
 
                 Time.sleepUntil(new Condition() {
@@ -307,8 +312,8 @@ public class SheepShearer extends Quest implements InventoryListener{
                     public boolean check() {
                         return fred.isOnScreen();
                     }
-                },Random.nextInt(712,2381));
-            }else if(fred == null){
+                }, Random.nextInt(712, 2381));
+            } else if (fred == null) {
                 setState("walkToFred");
             }
 
@@ -316,9 +321,10 @@ public class SheepShearer extends Quest implements InventoryListener{
     }
 
     private static void checkDoors() {
-        if(Quests.isCompleted(questString)){
+        if (Quests.isCompleted(questString)) {
             setState("stop");
-        }else{
+        } else {
+            setAction("Checking if doors are open to Fred");
             GameObject gate = GameObjects.getNearest(new Filter<GameObject>() {
                 @Override
                 public boolean accept(GameObject gameObject) {
@@ -343,21 +349,21 @@ public class SheepShearer extends Quest implements InventoryListener{
             if (gate != null && door != null && door2 != null && (door.hasAction("Open") || door2.hasAction("Open") || gate.hasAction("Open"))) {
                 if (door.distance() < gate.distance()) {
 
-                    if(door.distance() < door2.distance()){
+                    if (door.distance() < door2.distance()) {
 
                         if (door.hasAction("Open"))
                             door.interact("Open");
 
                         Time.sleep(345, 1998);
 
-                        if(door2.hasAction("Open"))
+                        if (door2.hasAction("Open"))
                             door2.interact("Open");
 
                         Time.sleep(345, 1998);
 
-                    }else{
+                    } else {
 
-                        if(door2.hasAction("Open"))
+                        if (door2.hasAction("Open"))
                             door2.interact("Open");
 
                         Time.sleep(345, 1998);
@@ -387,7 +393,7 @@ public class SheepShearer extends Quest implements InventoryListener{
 
                     Time.sleep(234, 1238);
 
-                    if(door2.hasAction("Open"))
+                    if (door2.hasAction("Open"))
                         door2.interact("Open");
 
                     Time.sleep(345, 1998);
@@ -395,12 +401,12 @@ public class SheepShearer extends Quest implements InventoryListener{
                 LogHandler.log("Re-open doors and gate");
 
                 checkDoors();
-            }else if (gate != null){
+            } else if (gate != null) {
                 if (gate.hasAction("Open")) {
                     gate.interact("Open");
                     Time.sleep(234, 1238);
                 }
-            }else if (door != null){
+            } else if (door != null) {
                 if (door.hasAction("Open")) {
                     door.interact("Open");
                     Time.sleep(345, 1998);
@@ -412,32 +418,35 @@ public class SheepShearer extends Quest implements InventoryListener{
 
 
     private static void walkToFred() {
-        if(!isTalking())
-            goToNPC(fredString,fredArea,"findFred");
-        else
+        if (!isTalking()) {
+            setAction("Walking to Fred");
+            goToNPC(fredString, fredArea, "findFred");
+        } else {
             setState("talkToFred");
+        }
     }
 
     private static void getTool() {
-        checkDoors();
-
-        GroundItem shears = GroundItems.getNearest("Shears");
-        if(shears != null){
-            shears.interact("Take");
-            Time.sleepUntil(new Condition() {
-                @Override
-                public boolean check() {
-                    return Inventory.contains(shearsId);
-                }
-            }, Random.nextInt(4000,6000));
-        }else {
-            LogHandler.log("No tool... hopping world");
-            hopWorld();
-        }
-
-        if(Inventory.contains(shearsId)){
+        if (Inventory.contains(shearsId)) {
             checkDoors();
             setState("walkToStile");
+        }else{
+            checkDoors();
+            setAction("Looking for shear tool");
+            GroundItem shears = GroundItems.getNearest("Shears");
+            if (shears != null) {
+                shears.interact("Take");
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        return Inventory.contains(shearsId);
+                    }
+                }, Random.nextInt(4000, 6000));
+            } else {
+                LogHandler.log("No tool... hopping world");
+                setAction("Swapping worlds for shear tool");
+                hopWorld();
+            }
         }
     }
 
@@ -448,7 +457,16 @@ public class SheepShearer extends Quest implements InventoryListener{
 
     @Override
     public void itemsAdded(InventoryEvent inventoryEvent) {
-        if(inventoryEvent.getItem().getID() == woolId) {
+        if(!Inventory.isOpen()){
+            Inventory.openTab();
+            Time.sleepUntil(new Condition() {
+                @Override
+                public boolean check() {
+                    return Inventory.isOpen();
+                }
+            }, Random.nextInt(2345,5321));
+        }
+        if (inventoryEvent.getItem().getID() == woolId) {
             woolStocked++;
         }
     }
