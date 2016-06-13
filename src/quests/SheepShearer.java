@@ -21,26 +21,26 @@ import org.tbot.wrappers.*;
  */
 public class SheepShearer extends Quest implements InventoryListener {
 
-    public static final Area fredArea = new Area(new Tile[]{new Tile(3185, 3277, 0), new Tile(3185, 3279, 0), new Tile(3191, 3278, 0), new Tile(3191, 3276, 0), new Tile(3191, 3274, 0), new Tile(3191, 3270, 0), new Tile(3189, 3271, 0), new Tile(3188, 3272, 0), new Tile(3188, 3274, 0)});
-    public static final Area stileArea = new Area(new Tile[]{new Tile(3198, 3277, 0)});
-    public static final Area sheepArea = new Area(new Tile[]{new Tile(3194, 3276, 0), new Tile(3204, 3276, 0), new Tile(3211, 3265, 0), new Tile(3209, 3258, 0), new Tile(3194, 3257, 0), new Tile(3193, 3258, 0), new Tile(3193, 3275, 0)});
-    public static final Area spinningArea = new Area(new Tile[]{new Tile(3207, 3214, 1)});
+    private static final Area fredArea = new Area(new Tile[]{new Tile(3185, 3277, 0), new Tile(3185, 3279, 0), new Tile(3191, 3278, 0), new Tile(3191, 3276, 0), new Tile(3191, 3274, 0), new Tile(3191, 3270, 0), new Tile(3189, 3271, 0), new Tile(3188, 3272, 0), new Tile(3188, 3274, 0)});
+    private static final Area stileArea = new Area(new Tile[]{new Tile(3198, 3277, 0)});
+    private static final Area sheepArea = new Area(new Tile[]{new Tile(3194, 3276, 0), new Tile(3204, 3276, 0), new Tile(3211, 3265, 0), new Tile(3209, 3258, 0), new Tile(3194, 3257, 0), new Tile(3193, 3258, 0), new Tile(3193, 3275, 0)});
+    private static final Area spinningArea = new Area(new Tile[]{new Tile(3207, 3214, 1)});
 
-    public static final String fredString = "Fred the Farmer";
-    public static final String questString = "Sheep Shearer";
-    public static final String stileString = "Stile";
-    public static final String shearString = "Shear";
-    public static final String spinningWheelString = "Spinning Wheel";
+    private static final String fredString = "Fred the Farmer";
+    private static final String questString = "Sheep Shearer";
+    private static final String stileString = "Stile";
+    private static final String shearString = "Shear";
+    private static final String spinningWheelString = "Spinning Wheel";
 
-    public static final int shearsId = 1735;
-    public static final int climbStileAnimation = 839;
-    public static final int spinAnimation = 894;
-    public static final int woolId = 1737;
-    public static final int ballOfWoolId = 1759;
+    private static final int shearsId = 1735;
+    private static final int spinAnimation = 894;
+    private static final int woolId = 1737;
+    private static final int ballOfWoolId = 1759;
 
-    public static int woolStocked = 0;
 
-    public static boolean completed = false;
+    private static int woolStocked = 0;
+
+    private static boolean completed = false;
 
     public static int run() {
 
