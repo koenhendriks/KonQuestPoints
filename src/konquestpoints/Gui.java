@@ -21,10 +21,14 @@ import java.awt.*;
         Graphics2D gr = (Graphics2D) g;
 
         gr.setColor(Color.WHITE);
-        gr.setFont(new Font("Sans Serif", Font.PLAIN, 20));
+        gr.setFont(new Font("Sans Serif", Font.BOLD, 20));
         gr.drawString("Konbot Quest Points", 15, 311);
-        gr.setFont(new Font("Arial", 1, 11));
+        gr.setFont(new Font("Arial", Font.PLAIN, 11));
         gr.drawString("Runtime : " + runTimer.getTimeRunningString(), 350, 311);
+        gr.drawString("Antiban lookaround : " + AntiBan.lookAroundTimer.getRemaining(), 0, 15);
+        gr.drawString("Antiban running : " + AntiBan.runningTimer.getRemaining(), 300, 15);
+        gr.drawString("Antiban tabs : " + AntiBan.tabsTimer.getRemaining(), 0, 28);
+        gr.drawString("Antiban mouse : " + AntiBan.mouseTimer.getRemaining(), 300, 28);
         gr.drawString("Current Quest : " + Quest.getActiveQuest(), 15, 330);
         gr.drawString("Doing : " + Quest.getAction(), 300, 330);
 
