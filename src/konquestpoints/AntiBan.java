@@ -39,10 +39,9 @@ public final class AntiBan {
     }
 
     private static void lookAround() {
-
         lookAroundTimer = new Timer(Random.nextInt(Random.nextInt(8000, 15000), Random.nextInt(50000, 70000)));
 
-        if (oneIn(25)) {
+        if (oneIn(2)) {
             Camera.setAngle(Camera.getAngleTo(Camera.getYaw() + Random.nextInt(150, 300)));
             LogHandler.log("[AB] Looking around far");
         } else {

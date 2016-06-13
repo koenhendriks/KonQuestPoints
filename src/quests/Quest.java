@@ -121,7 +121,7 @@ public abstract class Quest{
      * @param nextState String to which the state will change when the game object has been found
      */
     static void goToGameObject(final String gameObject, Area gameObjectArea, final String nextState){
-        GameObject go = GameObjects.getNearest(gameObject);
+        final GameObject go = GameObjects.getNearest(gameObject);
         final Path pathToGo = Walking.findPath(gameObjectArea.getCentralTile());
 
         if(((go != null && !go.isOnScreen()) || go == null) && pathToGo != null){
@@ -144,7 +144,7 @@ public abstract class Quest{
             Time.sleepUntil(new Condition() {
                 @Override
                 public boolean check() {
-                    if(GameObjects.getNearest(gameObject) != null && GameObjects.getNearest(gameObject).distance() < 3){
+                    if(go.distance() < 3){
                         setState(nextState);
                         return true;
                     }
