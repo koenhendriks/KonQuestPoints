@@ -1,5 +1,6 @@
 package konquestpoints;
 
+import org.tbot.bot.TBot;
 import org.tbot.internal.AbstractScript;
 import org.tbot.internal.Manifest;
 import org.tbot.internal.ScriptCategory;
@@ -9,7 +10,7 @@ import org.tbot.internal.event.events.InventoryEvent;
 import org.tbot.internal.event.listeners.InventoryListener;
 import org.tbot.internal.event.listeners.PaintListener;
 import org.tbot.internal.handlers.LogHandler;
-import org.tbot.methods.Random;
+import org.tbot.methods.*;
 import quests.CooksAssistant;
 import quests.RomeoJuliet;
 import quests.SheepShearer;
@@ -43,7 +44,10 @@ public class MainHandler extends AbstractScript implements PaintListener {
         else{
             LogHandler.log("All quests are done! Thank you for using Konbot.");
             LogHandler.log("Enjoy trading and using the grand exchange.");
-            return -1;
+            Game.logout();
+            Time.sleep(100,200);
+            TBot.getBot().getScriptHandler().stopScript();
+            return 0;
         }
     }
 
