@@ -165,36 +165,40 @@ public final class RomeoJuliet extends Quest {
     }
 
     private static void findApo() {
-        setAction("Looking for Apo");
-        final NPC apo = Npcs.getNearest(apothecaryString);
-        if (apo != null && apo.isOnScreen()) {
-            Camera.turnTo(apo);
-            Time.sleep(100, 1300);
-            apo.interact("Talk-to");
-            Time.sleepUntil(new Condition() {
-                @Override
-                public boolean check() {
-                    if (isTalking()) {
-                        setState("talkToApo");
-                        return true;
+        if(isTalking()){
+            setState("talkToApo");
+        }else{
+            setAction("Looking for Apo");
+            final NPC apo = Npcs.getNearest(apothecaryString);
+            if (apo != null && apo.isOnScreen()) {
+                Camera.turnTo(apo);
+                Time.sleep(100, 1300);
+                apo.interact("Talk-to");
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        if (isTalking()) {
+                            setState("talkToApo");
+                            return true;
+                        }
+                        return false;
                     }
-                    return false;
-                }
-            }, Random.nextInt(976, 2173));
-        } else if (apo != null && !apo.isOnScreen()) {
-            Tile randomTile = randomTileInArea(apothecaryArea);
-            Path path = Walking.findPath(randomTile);
-            if (path != null)
-                path.traverse();
+                }, Random.nextInt(976, 2173));
+            } else if (apo != null && !apo.isOnScreen()) {
+                Tile randomTile = randomTileInArea(apothecaryArea);
+                Path path = Walking.findPath(randomTile);
+                if (path != null)
+                    path.traverse();
 
-            Time.sleepUntil(new Condition() {
-                @Override
-                public boolean check() {
-                    return apo.isOnScreen();
-                }
-            }, Random.nextInt(712, 2381));
-        } else if (apo == null) {
-            setState("walkToApo");
+                Time.sleepUntil(new Condition() {
+                    @Override
+                    public boolean check() {
+                        return apo.isOnScreen();
+                    }
+                }, Random.nextInt(712, 2381));
+            } else if (apo == null) {
+                setState("walkToApo");
+            }
         }
     }
 
