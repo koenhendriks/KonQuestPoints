@@ -45,6 +45,9 @@ public class SheepShearer extends Quest implements InventoryListener{
     public static int run(){
 
         if(!completed){
+
+            setActiveQuest(questString);
+
             switch (getState()){
                 case "start":
                     if(Quests.isCompleted(questString)){
@@ -313,96 +316,98 @@ public class SheepShearer extends Quest implements InventoryListener{
     }
 
     private static void checkDoors() {
-        LogHandler.log("checking doors and gate");
-        GameObject gate = GameObjects.getNearest(new Filter<GameObject>() {
-            @Override
-            public boolean accept(GameObject gameObject) {
-                return gameObject.getLocation().getX() == 3188 && gameObject.getLocation().getY() == 3279;
-            }
-        });
-
-        GameObject door = GameObjects.getNearest(new Filter<GameObject>() {
-            @Override
-            public boolean accept(GameObject gameObject) {
-                return gameObject.getLocation().getX() == 3189 && gameObject.getLocation().getY() == 3275;
-            }
-        });
-
-        GameObject door2 = GameObjects.getNearest(new Filter<GameObject>() {
-            @Override
-            public boolean accept(GameObject gameObject) {
-                return gameObject.getLocation().getX() == 3188 && gameObject.getLocation().getY() == 3272;
-            }
-        });
-
-        if (gate != null && door != null && door2 != null && (door.hasAction("Open") || door2.hasAction("Open") || gate.hasAction("Open"))) {
-            if (door.distance() < gate.distance()) {
-
-                if(door.distance() < door2.distance()){
-
-                    if (door.hasAction("Open"))
-                        door.interact("Open");
-
-                    Time.sleep(345, 1998);
-
-                    if(door2.hasAction("Open"))
-                        door2.interact("Open");
-
-                    Time.sleep(345, 1998);
-
-                }else{
-
-                    if(door2.hasAction("Open"))
-                        door2.interact("Open");
-
-                    Time.sleep(345, 1998);
-
-                    if (door.hasAction("Open"))
-                        door.interact("Open");
-
-                    Time.sleep(345, 1998);
-
+        if(Quests.isCompleted(questString)){
+            setState("stop");
+        }else{
+            GameObject gate = GameObjects.getNearest(new Filter<GameObject>() {
+                @Override
+                public boolean accept(GameObject gameObject) {
+                    return gameObject.getLocation().getX() == 3188 && gameObject.getLocation().getY() == 3279;
                 }
+            });
+
+            GameObject door = GameObjects.getNearest(new Filter<GameObject>() {
+                @Override
+                public boolean accept(GameObject gameObject) {
+                    return gameObject.getLocation().getX() == 3189 && gameObject.getLocation().getY() == 3275;
+                }
+            });
+
+            GameObject door2 = GameObjects.getNearest(new Filter<GameObject>() {
+                @Override
+                public boolean accept(GameObject gameObject) {
+                    return gameObject.getLocation().getX() == 3188 && gameObject.getLocation().getY() == 3272;
+                }
+            });
+
+            if (gate != null && door != null && door2 != null && (door.hasAction("Open") || door2.hasAction("Open") || gate.hasAction("Open"))) {
+                if (door.distance() < gate.distance()) {
+
+                    if(door.distance() < door2.distance()){
+
+                        if (door.hasAction("Open"))
+                            door.interact("Open");
+
+                        Time.sleep(345, 1998);
+
+                        if(door2.hasAction("Open"))
+                            door2.interact("Open");
+
+                        Time.sleep(345, 1998);
+
+                    }else{
+
+                        if(door2.hasAction("Open"))
+                            door2.interact("Open");
+
+                        Time.sleep(345, 1998);
+
+                        if (door.hasAction("Open"))
+                            door.interact("Open");
+
+                        Time.sleep(345, 1998);
+
+                    }
 
 
+                    if (gate.hasAction("Open")) {
+                        gate.interact("Open");
+                        Time.sleep(234, 1238);
+                    }
+
+                } else {
+
+                    if (gate.hasAction("Open"))
+                        gate.interact("Open");
+
+                    Time.sleep(234, 1238);
+
+                    if (door.hasAction("Open"))
+                        door.interact("Open");
+
+                    Time.sleep(234, 1238);
+
+                    if(door2.hasAction("Open"))
+                        door2.interact("Open");
+
+                    Time.sleep(345, 1998);
+                }
+                LogHandler.log("Re-open doors and gate");
+
+                checkDoors();
+            }else if (gate != null){
                 if (gate.hasAction("Open")) {
                     gate.interact("Open");
                     Time.sleep(234, 1238);
                 }
-
-            } else {
-
-                if (gate.hasAction("Open"))
-                    gate.interact("Open");
-
-                Time.sleep(234, 1238);
-
-                if (door.hasAction("Open"))
+            }else if (door != null){
+                if (door.hasAction("Open")) {
                     door.interact("Open");
-
-                Time.sleep(234, 1238);
-
-                if(door2.hasAction("Open"))
-                    door2.interact("Open");
-
-                Time.sleep(345, 1998);
+                    Time.sleep(345, 1998);
+                }
             }
-            LogHandler.log("Re-open doors and gate");
-
-            checkDoors();
-        }else if (gate != null){
-            if (gate.hasAction("Open")) {
-                gate.interact("Open");
-                Time.sleep(234, 1238);
-            }
-        }else if (door != null){
-            if (door.hasAction("Open")) {
-                door.interact("Open");
-                Time.sleep(345, 1998);
-            }
+            LogHandler.log("Doors and gate are open");
         }
-        LogHandler.log("Doors and gate are open");
-
     }
 
 

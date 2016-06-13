@@ -14,7 +14,7 @@ import sun.rmi.runtime.Log;
  * @author Koen Hendriks
  * @version 0.1 (29-04-2016)
  */
-abstract class Quest{
+public abstract class Quest{
 
     /**
      * Widgets for quest interactions with NPC's
@@ -26,6 +26,8 @@ abstract class Quest{
     public static final WidgetChild clickToContinue2 = Widgets.getWidget(217,2);
     public static final WidgetChild clickToContinue3 = Widgets.getWidget(193,2);
     public static final Widget talkOptions = Widgets.getWidget(219);
+    private static String activeQuest;
+    private static String action;
 
     private static String state = "start";
 
@@ -274,5 +276,21 @@ abstract class Quest{
 
     static boolean isTalking(){
         return clickToContinue.isVisible() || clickToContinue2.isVisible() || clickToContinue3.isVisible() || talkOptions.isValid();
+    }
+
+    public static String getActiveQuest() {
+        return activeQuest;
+    }
+
+    public static void setActiveQuest(String activeQuest) {
+        Quest.activeQuest = activeQuest;
+    }
+
+    public static String getAction() {
+        return action;
+    }
+
+    public static void setAction(String action) {
+        Quest.action = action;
     }
 }
