@@ -156,6 +156,7 @@ public final class RomeoJuliet extends Quest {
                     else if (Inventory.contains(potionId))
                         setState("walkToJulietHouse");
                     else {
+                        Time.sleep(2200,4300);
                         setState("walkToApo");
                     }
                 }
