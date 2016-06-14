@@ -19,7 +19,7 @@ import java.awt.*;
  * @author Koen Hendriks
  * @version 0.1 (29-04-2016)
  */
-@Manifest(name = "Kon Quest Points", authors = "Kom Op Nou", version = 1.0, description = "Gets you to 7 Quest points so you can trade and use the Grand Exchange", category = ScriptCategory.OTHER)
+@Manifest(name = "Kon Quest Points", authors = "Kom Op Nou", version = 1.1, description = "Gets you to 7 Quest points so you can trade and use the Grand Exchange", category = ScriptCategory.OTHER)
 public class MainHandler extends AbstractScript implements PaintListener {
 
     public static boolean completedCooksAssistant = false;
