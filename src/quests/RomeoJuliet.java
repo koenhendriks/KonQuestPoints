@@ -53,7 +53,7 @@ public final class RomeoJuliet extends Quest {
                     if (Quests.isCompleted(questString)) {
                         setState("stop");
                     } else {
-                        setState("walkToBush");
+                        setState("walkToApo");
                     }
                     break;
                 case "walkToBush":
@@ -144,6 +144,8 @@ public final class RomeoJuliet extends Quest {
                 LogHandler.log("looking for widget");
                 WidgetChild endTalk = Widgets.getWidgetByTextIncludingGrandChildren("Ok, thanks.");
                 if (endTalk != null && endTalk.isValid() && endTalk.isVisible()) {
+                    endTalk.click();
+                    Time.sleep(1200,3420);
                     if (!Inventory.contains(cadavaBerryId) && !Inventory.contains(potionId))
                         setState("walkToBush");
                     else if (Inventory.contains(potionId))
