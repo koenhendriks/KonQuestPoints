@@ -122,15 +122,15 @@ public class SheepShearer extends Quest implements InventoryListener {
                 }
             } else {
                 wool.interact("Use");
-                Time.sleep(600, 800);
+                Time.sleep(1200, 1500);
                 spinningWheel.interact("Use wool -> Spinning wheel");
-                Time.sleep(500, 800);
+                Time.sleep(1400, 1800);
                 Time.sleepUntil(new Condition() {
                     @Override
                     public boolean check() {
                         return Players.getLocal().getAnimation() != spinAnimation;
                     }
-                });
+                }, Random.nextInt(3548,4785));
             }
 
         }
