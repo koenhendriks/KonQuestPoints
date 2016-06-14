@@ -135,9 +135,13 @@ public final class RomeoJuliet extends Quest {
         } else {
             setAction("Talking with Apo for potion");
             WidgetChild talk = Widgets.getWidgetByTextIncludingGrandChildren("Click here to continue");
+            WidgetChild noLawrence = Widgets.getWidgetByTextIncludingGrandChildren("Can you make a strength potion");
             if (talk != null) {
                 talk.click();
                 Time.sleep(800, 1400);
+            } else if (noLawrence != null && noLawrence.isValid() && noLawrence.isOnScreen()){
+                setState("walkToFatherLawrence");
+                Time.sleep(900,2348);
             } else if (Inventory.contains(potionId)) {
                 setState("walkToJulietHouse");
             } else {
