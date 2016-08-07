@@ -10,7 +10,7 @@ This script wil bot some quests until your account will have 7 quest points so i
 ## Version
 
 ### Current version
-1.0.0
+1.1.0
 
 ### Version description
 Using Semantic Versioning see http://semver.org/
